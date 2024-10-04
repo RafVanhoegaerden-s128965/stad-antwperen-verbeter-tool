@@ -1,4 +1,4 @@
-FROM node:14 as build
+FROM node:18 as build
 WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm install
@@ -6,5 +6,7 @@ COPY . .
 RUN npm run build
 
 FROM nginx:alpine
-COPY --from=build /app/dist/my-angular-app /usr/share/nginx/html
+COPY .docker/nginx.conf /etc/nginx/nginx.con
+COPY --from=build /app/dist/my-angular-app/browser /usr/share/nginx/html
+
 EXPOSE 80
