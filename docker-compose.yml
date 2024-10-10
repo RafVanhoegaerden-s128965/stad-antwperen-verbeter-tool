@@ -6,8 +6,6 @@ services:
     depends_on:
       - backend
     env_file: .env
-    ports:
-      - "8080:8080"  # Expose frontend directly on port 8080
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.stad-frontend.rule=Host(`${HOSTNAME}`) && !PathPrefix(`/api`)"
@@ -19,8 +17,6 @@ services:
     container_name: stad-antwerpen-backend
     build: ./backend
     env_file: .env
-    ports:
-      - "8000:8000"  # Expose backend directly on port 8000
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.stad-backend.rule=Host(`${HOSTNAME}`) && PathPrefix(`/api`)"
