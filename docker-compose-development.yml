@@ -1,6 +1,6 @@
 version: "3"
 services:
-      traefik:
+    traefik:
         image: traefik:v3.0
         container_name: stad-antwerpen-traefik
         env_file: .env
