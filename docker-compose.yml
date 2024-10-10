@@ -25,6 +25,9 @@ services:
       - "traefik.http.routers.stad-backend.entrypoints=websecure"
       - "traefik.http.routers.stad-backend.tls=true"
       - "traefik.http.routers.stad-backend.tls.certresolver=letsencrypt"
+      - "traefik.http.services.stad-backend-service.loadbalancer.server.port=8000"
+    ports:
+      - "8000:8000"
     networks:
       - traefik
 networks:
