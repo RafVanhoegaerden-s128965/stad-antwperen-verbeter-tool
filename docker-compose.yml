@@ -1,0 +1,35 @@
+version: "3"
+services:
+  frontend:
+    container_name: stad-antwerpen-frontend
+    build: ./frontend
+    depends_on:
+      - backend
+    env_file: .env
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.stad-frontend.rule=Host(`${HOSTNAME}`) && !PathPrefix(`/api`)"
+      - "traefik.http.routers.stad-frontend.entrypoints=websecure"
+      - "traefik.http.routers.stad-frontend.tls=true"
+      - "traefik.http.routers.stad-frontend.tls.certresolver=letsencrypt"
+    networks:
+      - traefik
+
+  backend:
+    container_name: stad-antwerpen-backend
+    build: ./backend
+    env_file: .env
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.stad-backend.rule=Host(`${HOSTNAME}`) && PathPrefix(`/api`)"
+      - "traefik.http.routers.stad-backend.entrypoints=websecure"
+      - "traefik.http.routers.stad-backend.tls=true"
+      - "traefik.http.routers.stad-backend.tls.certresolver=letsencrypt"
+      - "traefik.http.services.stad-backend-service.loadbalancer.server.port=8000"
+    ports:
+      - "8000:8000"
+    networks:
+      - traefik
+networks:
+  traefik:
+    external: true
