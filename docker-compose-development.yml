@@ -48,6 +48,22 @@ services:
             - traefik.enable=true
             - traefik.http.routers.backend.rule=Host(`$APP_URL`) && PathPrefix(`/api`)
             - traefik.http.services.backend-service.loadbalancer.server.port=8000
+    elasticsearch:
+        image: docker.elastic.co/elasticsearch/elasticsearch:8.11.1
+        container_name: stad-antwerpen-elasticsearch
+        environment:
+            - discovery.type=single-node
+            - xpack.security.enabled=false
+        ports:
+            - 9200:9200
+        volumes:
+            - es-data:/usr/share/elasticsearch/data
+
+        labels:
+            - traefik.enable=true
+            - traefik.http.routers.elasticsearch.rule=Host(`elasticsearch.${APP_URL}`)
+            - traefik.http.services.elasticsearch.loadbalancer.server.port=9200
 
 volumes:
     letsencrypt-volume:
+    es-data-dev:
