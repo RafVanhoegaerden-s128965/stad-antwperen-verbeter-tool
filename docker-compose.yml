@@ -1,59 +1,59 @@
-version: "3"
 services:
-  frontend:
-    container_name: stad-antwerpen-frontend
-    build: ./frontend
-    depends_on:
-      - backend
-    env_file: .env
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.stad-frontend.rule=Host(`${HOSTNAME}`) && !PathPrefix(`/api`)"
-      - "traefik.http.routers.stad-frontend.entrypoints=websecure"
-      - "traefik.http.routers.stad-frontend.tls=true"
-      - "traefik.http.routers.stad-frontend.tls.certresolver=letsencrypt"
-    networks:
-      - traefik
+    frontend:
+        container_name: stad-antwerpen-frontend
+        build: ./frontend
+        depends_on:
+            - backend
+        env_file: .env
+        labels:
+            - "traefik.enable=true"
+            - "traefik.http.routers.stad-frontend.rule=Host(`${HOSTNAME}`) && !PathPrefix(`/api`)"
+            - "traefik.http.routers.stad-frontend.entrypoints=websecure"
+            - "traefik.http.routers.stad-frontend.tls=true"
+            - "traefik.http.routers.stad-frontend.tls.certresolver=letsencrypt"
+        networks:
+            - traefik
 
-  backend:
-    container_name: stad-antwerpen-backend
-    build: ./backend
-    env_file: .env
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.stad-backend.rule=Host(`${HOSTNAME}`) && PathPrefix(`/api`)"
-      - "traefik.http.routers.stad-backend.entrypoints=websecure"
-      - "traefik.http.routers.stad-backend.tls=true"
-      - "traefik.http.routers.stad-backend.tls.certresolver=letsencrypt"
-      - "traefik.http.services.stad-backend-service.loadbalancer.server.port=8000"
-    ports:
-      - "8000:8000"
-    networks:
-      - traefik
+    backend:
+        container_name: stad-antwerpen-backend
+        build: ./backend
+        env_file: .env
+        labels:
+            - "traefik.enable=true"
+            - "traefik.http.routers.stad-backend.rule=Host(`${HOSTNAME}`) && PathPrefix(`/api`)"
+            - "traefik.http.routers.stad-backend.entrypoints=websecure"
+            - "traefik.http.routers.stad-backend.tls=true"
+            - "traefik.http.routers.stad-backend.tls.certresolver=letsencrypt"
+            - "traefik.http.services.stad-backend-service.loadbalancer.server.port=8000"
+        ports:
+            - "8000:8000"
+        networks:
+            - traefik
 
-  elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:8.11.1
-    container_name: stad-antwerpen-elasticsearch
-    environment:
-      - discovery.type=single-node
-      - xpack.security.enabled=true
-      - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
-    volumes:
-      - es-data:/usr/share/elasticsearch/data
-    networks:
-      - traefik
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.elasticsearch.rule=Host(`elasticsearch.${HOSTNAME}`) && PathPrefix(`/es`)"
-      - "traefik.http.routers.elasticsearch.entrypoints=websecure"
-      - "traefik.http.routers.elasticsearch.tls=true"
-      - "traefik.http.routers.elasticsearch.tls.certresolver=letsencrypt"
-      - "traefik.http.services.elasticsearch.loadbalancer.server.port=9200"
+    elasticsearch:
+        image: docker.elastic.co/elasticsearch/elasticsearch:8.11.1
+        container_name: stad-antwerpen-elasticsearch
+        environment:
+            - discovery.type=single-node
+            - xpack.security.enabled=true
+            - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
+        labels:
+            - "traefik.enable=true"
+            - "traefik.http.routers.elasticsearch.rule=Host(`elasticsearch.${HOSTNAME}`) && PathPrefix(`/es`)"
+            - "traefik.http.routers.elasticsearch.entrypoints=websecure"
+            - "traefik.http.routers.elasticsearch.tls=true"
+            - "traefik.http.routers.elasticsearch.tls.certresolver=letsencrypt"
+            - "traefik.http.services.elasticsearch.loadbalancer.server.port=9200"
+        ports:
+            - 9200:9200
+        volumes:
+            - es-data-prod:/usr/share/elasticsearch/data
+        networks:
+            - traefik
 
 volumes:
-  es-data-prod:
-
+    es-data-prod:
 
 networks:
-  traefik:
-    external: true
+    traefik:
+        external: true

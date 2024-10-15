@@ -1,4 +1,3 @@
-version: "3"
 services:
     traefik:
         image: traefik:v3.0
@@ -54,16 +53,17 @@ services:
         environment:
             - discovery.type=single-node
             - xpack.security.enabled=false
+        labels:
+            - traefik.enable=true
+            - traefik.http.routers.elasticsearch.rule=Host(`elasticsearch.${APP_URL}`)
+            - traefik.http.routers.elasticsearch.entrypoints=websecure
+            - traefik.http.routers.elasticsearch.tls=true
+            - traefik.http.services.elasticsearch.loadbalancer.server.port=9200
         ports:
             - 9200:9200
         volumes:
             - es-data:/usr/share/elasticsearch/data
 
-        labels:
-            - traefik.enable=true
-            - traefik.http.routers.elasticsearch.rule=Host(`elasticsearch.${APP_URL}`)
-            - traefik.http.services.elasticsearch.loadbalancer.server.port=9200
-
 volumes:
     letsencrypt-volume:
-    es-data-dev:
+    es-data:
