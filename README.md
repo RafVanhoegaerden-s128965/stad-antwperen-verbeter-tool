@@ -15,6 +15,18 @@ The application should now be running. Access it at the URL specified in your `.
 To stop the local development environment:
 `docker-compose -f docker-compose-development.yml down`
 
+### Backend
+
+First install uvicorn:
+
+1. Open CMD
+2. Install uvicorn: `pip install uvicorn`
+3. Restart terminal
+4. Check installation: `uvicorn --version`
+
+To run the backend locally with uvicorn:
+`uvicorn main:app --reload`
+
 ## Project Structure
 
 -   Frontend code is located in the `frontend` directory:
