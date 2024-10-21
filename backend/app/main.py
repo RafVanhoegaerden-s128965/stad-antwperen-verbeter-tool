@@ -1,5 +1,7 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Depends
 from pydantic import BaseModel
+from elasticsearch import Elasticsearch
+from elasticsearch.exceptions import NotFoundError
 
 app = FastAPI(
     title="Stad Antwerpen API",
@@ -9,26 +11,47 @@ app = FastAPI(
     redoc_url="/api/redoc",
 )
 
-# Een eenvoudige database om items op te slaan
-items = {}
+# Elasticsearch client
+es = Elasticsearch(["http://elasticsearch:9200"])
 
 class Item(BaseModel):
     name: str
     description: str = None
 
+def get_es_client():
+    return es
+
 @app.get("/api")
 def read_root():
     return {"Hello": "World"}
 
-@app.get("/api/items/{item_id}")
-def read_item(item_id: int, q: str = None):
-    if item_id not in items:
-        raise HTTPException(status_code=404, detail="Item not found")
-    return {"item_id": item_id, "item": items[item_id], "q": q}
+@app.get("/api/items")
+def read_items(es: Elasticsearch = Depends(get_es_client)):
+    try:
+        result = es.search(index="items", body={"query": {"match_all": {}}, "size": 10000})
+        items = [{"item_id": hit["_id"], "item": hit["_source"]} for hit in result["hits"]["hits"]]
+        return {"items": items, "total": result["hits"]["total"]["value"]}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to retrieve items: {str(e)}")
 
-@app.post("/api//items/{item_id}")
-def create_item(item_id: int, item: Item):
-    if item_id in items:
+@app.get("/api/items/{item_id}")
+def read_item(item_id: str, es: Elasticsearch = Depends(get_es_client)):
+    try:
+        doc = es.get(index="items", id=item_id)
+        return {"item_id": item_id, "item": doc["_source"]}
+    except NotFoundError:
+        raise HTTPException(status_code=404, detail="Item not found")
+
+@app.post("/api/items/{item_id}")
+def create_item(item_id: str, item: Item, es: Elasticsearch = Depends(get_es_client)):
+    try:
+        # Check if the item already exists
+        es.get(index="items", id=item_id)
         raise HTTPException(status_code=400, detail="Item already exists")
-    items[item_id] = item
-    return {"item_id": item_id, "item": item}
+    except NotFoundError:
+        # Item doesn't exist, so we can create it
+        result = es.index(index="items", id=item_id, document=item.dict())
+        if result["result"] == "created":
+            return {"item_id": item_id, "item": item}
+        else:
+            raise HTTPException(status_code=500, detail="Failed to create item")
