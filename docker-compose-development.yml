@@ -63,7 +63,16 @@ services:
             - 9200:9200
         volumes:
             - es-data:/usr/share/elasticsearch/data
-
+    scraper:
+        container_name: stad-antwerpen-scraper
+        build: ./scraper
+        env_file: .env
+        depends_on:
+            - elasticsearch
+        labels:
+            - traefik.enable=true
+            - traefik.http.routers.backend.rule=Host(`$APP_URL`) && PathPrefix(`/scraper`)
+            - traefik.http.services.backend-service.loadbalancer.server.port=3000
 volumes:
     letsencrypt-volume:
     es-data:
