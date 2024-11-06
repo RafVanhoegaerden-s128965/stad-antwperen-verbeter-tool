@@ -1,0 +1,37 @@
+textarea {
+  width: 100%;
+  resize: vertical; /* Gebruiker kan de hoogte aanpassen */
+  padding: 10px;
+  margin-bottom: 10px;
+  border-radius: 5px;
+  border: 1px solid #ddd;
+  font-size: 16px;
+  min-height: 300px; /* Zorgt voor consistente hoogte */
+}
+
+select {
+  width: 60%; /* Zorg ervoor dat de selectbox de volledige breedte van de container heeft */
+  padding: 10px; /* Voeg wat padding toe voor een betere uitstraling */
+  border-radius: 5px; /* Ronde hoeken voor de selectbox */
+  border: 1px solid #ddd; /* Grijze rand voor de selectbox */
+  background-color: #f8f9fa; /* Achtergrondkleur voor de selectbox */
+  font-size: 16px; /* Vergroot de tekstgrootte voor de opties */
+}
+
+button {
+  background-color: #0057b7; /* Blauw */
+  color: white; /* Witte tekst */
+  border: none; /* Geen rand */
+  padding: 12px 10px; /* Grotere padding voor een grotere knop */
+  font-size: 14px; /* Grotere tekst */
+  cursor: pointer; /* Cursor verandert naar pointer */
+  width: 150px;
+  margin-top: 10px; /* Ruimte tussen select en knop */
+  margin-left: 133px;
+  font-weight: normal;
+}
+
+h3 {
+  font-weight: normal;
+  font-size: 21px;
+}

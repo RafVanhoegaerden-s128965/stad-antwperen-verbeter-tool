@@ -1,0 +1,17 @@
+<div>
+    <h3>Voer je tekst in</h3>
+    <textarea [(ngModel)]="inputText" rows="15" style="width: 100%;"></textarea>
+  
+ 
+    <label for="mediumSelect" style="display: none;">Selecteer Medium:</label> <!-- Verberg label -->
+    <select id="mediumSelect" [(ngModel)]="selectedMedium" (change)="onMediumSelected(selectedMedium)">
+      <option value="" disabled selected>Selecteer een Medium</option> <!-- Placeholder -->
+      <option value="Blog">Blog</option>
+      <option value="Artikel">Artikel</option>
+      <option value="Rapport">Rapport</option>
+    </select>
+  
+    <button (click)="generateText()">Genereer</button>
+    
+  </div>
+  

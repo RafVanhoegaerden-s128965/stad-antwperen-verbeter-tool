@@ -1,0 +1,6 @@
+<div class="medium-select">
+  <label for="medium-select">Selecteer Medium:</label>
+  <select id="medium-select" [(ngModel)]="selectedMedium">
+    <option *ngFor="let medium of media" [value]="medium">{{ medium }}</option>
+  </select>
+</div>
