@@ -1,27 +1,27 @@
 textarea {
     width: 100%;
-    resize: vertical; /* Laat gebruiker de hoogte aanpassen */
+    resize: vertical; 
     padding: 10px;
-    /* margin-top: 65px; */
+   
     margin-bottom: 10px;
     border-radius: 5px;
     border: 1px solid #ddd;
     background-color: #f8f9fa;
     font-size: 16px;
-    min-height: 300px; /* Zelfde hoogte als input veld */
+    min-height: 300px; 
    
   }
   
   button {
-    background-color: #0057B7; /* Donkerblauw */
-    color: white; /* Witte tekst */
-    border: none; /* Geen rand */
-    padding: 12px 30px; /* Grotere padding voor een grotere knop */
-    font-size: 14px; /* Grotere tekst */
-    cursor: pointer; /* Cursor verandert naar pointer */
+    background-color: #0057B7; 
+    color: white; 
+    border: none; 
+    padding: 12px 30px; 
+    font-size: 14px;
+    cursor: pointer; 
     margin-top: 10px; 
     width: 150px;
-    transition: background-color 0.3s; /* Animatie voor achtergrondkleur bij hover */
+    transition: background-color 0.3s;
 }
 
 h3 {
