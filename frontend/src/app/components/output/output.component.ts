@@ -11,8 +11,8 @@ import { CommonModule } from '@angular/common';
   styleUrl: './output.component.css'
 })
 export class OutputComponent {
-  @Input() outputText: string = '';  // Ontvangt de gegenereerde tekst van de parent
-  @Input() showMessage: boolean = false;  // Nieuwe input om te bepalen wanneer de boodschap zichtbaar is
+  @Input() outputText: string = '';  
+  @Input() showMessage: boolean = false;  
   @Output() outputTextChange = new EventEmitter<string>();
   @Output() finalized = new EventEmitter<void>();
 
