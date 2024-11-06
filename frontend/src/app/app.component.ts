@@ -15,11 +15,11 @@ import {TextEditorComponent} from './text-editor/text-editor.component'
 export class AppComponent {
   logoUrl: string = 'https://seeklogo.com/images/S/stad-antwerpen-logo-F659E48C62-seeklogo.com.png';
   outputText: string = '';
-  showMessage: boolean = false;  // Voeg deze regel toe
+  showMessage: boolean = false;
 
   onTextGenerated(text: string) {
     this.outputText = text;
-    this.showMessage = true;  // Zet showMessage op true wanneer tekst gegenereerd is
+    this.showMessage = true;  
   }
 
   onOutputTextChanged(updatedText: string) {
@@ -28,6 +28,6 @@ export class AppComponent {
 
   onTextFinalized() {
     this.outputText = '';
-    this.showMessage = false;  // Zet showMessage op false na finaliseren
+    this.showMessage = false;  
   }
 }
