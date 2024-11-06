@@ -47,15 +47,15 @@
   }
 
   .logo-container {
-    position: absolute;  /* Maakt het mogelijk om het logo vrij te positioneren */
-    top: 0px;          /* Ruimte van de bovenkant van het scherm */
-    left: 0px;         /* Ruimte van de linkerkant van het scherm */
-    z-index: 1000;     /* Zorgt ervoor dat het logo boven andere elementen staat */
+    position: absolute;  
+    top: 0px;          
+    left: 0px;         
+    z-index: 1000;     
   }
   
   .logo {
-    width: 60px;       /* Of een andere waarde naar keuze */
-    height: auto;       /* Houd de aspect ratio van het logo */
+    width: 60px;       
+    height: auto;      
   }
   
   
