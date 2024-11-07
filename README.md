@@ -8,12 +8,12 @@
 ## Development
 
 To run the application locally for development:
-`docker-compose -f docker-compose-development.yml up --build -d`
+`docker compose -f docker-compose-development.yml up --build -d`
 
 The application should now be running. Access it at the URL specified in your `.env` file
 
 To stop the local development environment:
-`docker-compose -f docker-compose-development.yml down`
+`docker compose -f docker-compose-development.yml down`
 
 ### Backend
 
@@ -38,9 +38,9 @@ To run the backend locally with uvicorn:
 ## Production
 
 To deploy the application on a server:
-`docker-compose up --build -d`
+`docker compose up --build -d`
 
 The application should now be running in production mode
 
 To stop the application on the server:
-`docker-compose down`
+`docker compose down`

@@ -1,0 +1,58 @@
+<div class="container">
+  <h2 class="title">Slimme Schrijftool</h2>
+
+  <form [formGroup]="textForm" class="form">
+    <div class="text-fields">
+      <div class="field">
+        <label class="label">Originele tekst</label>
+        <textarea
+          formControlName="originalText"
+          placeholder="Voer hier je originele tekst in..."
+          class="text-area"
+        ></textarea>
+      </div>
+
+      <div class="field">
+        <label class="label">Gegenereerde tekst</label>
+        <textarea
+          formControlName="generatedText"
+          placeholder="Hier verschijnt de gegenereerde tekst..."
+          class="text-area"
+        ></textarea>
+        <label class="label-helper"
+          >Bent u niet tevreden met het resultaat? Pas eventueel aan en druk
+          vervolgens op finaliseer!</label
+        >
+      </div>
+    </div>
+
+    <div class="controls">
+      <div class="select-container">
+        <label class="label">Medium type</label>
+        <select
+          formControlName="mediumType"
+          class="select"
+          id="mediumTypeSelect"
+        >
+          <option value="" disabled style="color: #d0d0d0">
+            Selecteer een medium
+          </option>
+          <option value="artikel">Artikel</option>
+        </select>
+      </div>
+
+      <div class="buttons">
+        <button
+          type="button"
+          class="button generalize"
+          (click)="onGeneralize()"
+        >
+          Generaliseer
+        </button>
+        <button type="button" class="button finalize" (click)="onFinalize()">
+          Finaliseer
+        </button>
+      </div>
+    </div>
+  </form>
+</div>

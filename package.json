@@ -1,0 +1,11 @@
+{
+  "devDependencies": {
+    "@types/babel__generator": "^7.6.8",
+    "@types/babel__template": "^7.4.4",
+    "@types/babel__traverse": "^7.20.6",
+    "@types/wrap-ansi": "^8.1.0"
+  },
+  "dependencies": {
+    "bulma": "^1.0.2"
+  }
+}
