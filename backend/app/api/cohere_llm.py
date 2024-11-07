@@ -26,7 +26,9 @@ Generate a JSON giving list of corrections made to the text, including bad words
 "incorrect_part": The part of the text that contains the error, marked for replacement.
 "corrected_part": The suggested correct version of the incorrect part.
 "explanation": A brief explanation in Dutch regarding the error and suggestion from the Huisstijlgids in context.
-"error_severity": The severity of the rule broken from 0.0 to 1.0. How badly is the rule being broken."""
+"error_severity": The severity of the rule broken from 0.0 to 1.0. How badly is the rule being broken.
+"start_index": The starting character index of the incorrect part within the full text.
+"end_index": The ending character index of the incorrect part within the full text."""
                 }
             ]
         },
@@ -65,7 +67,7 @@ def get_suggestions(text: str, text_type: TextType):
     print("Calling API")
     response = co.chat(model="command-r-plus-08-2024",
                        messages=messages,
-                       temperature=0.65,
+                       temperature=0.7,
                        response_format={
                            "type": "json_object",
                            "schema": {
@@ -90,6 +92,12 @@ def get_suggestions(text: str, text_type: TextType):
                                                },
                                                "error_severity": {
                                                    "type": "number"
+                                               },
+                                               "start_index": {
+                                                   "type": "integer"
+                                               },
+                                               "end_index": {
+                                                   "type": "integer"
                                                }
                                            },
                                            "required": [
@@ -97,7 +105,9 @@ def get_suggestions(text: str, text_type: TextType):
                                                "incorrect_part",
                                                "corrected_part",
                                                "explanation",
-                                               "error_severity"
+                                               "error_severity",
+                                               "start_index",
+                                               "end_index"
                                            ]
                                        }
                                    }

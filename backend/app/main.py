@@ -1,4 +1,3 @@
-<<<<<<< backend/app/main.py
 from fastapi import FastAPI, HTTPException, Depends
 from pydantic import BaseModel
 from elasticsearch import Elasticsearch
