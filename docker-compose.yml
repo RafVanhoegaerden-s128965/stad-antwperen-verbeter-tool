@@ -50,6 +50,16 @@ services:
             - es-data-prod:/usr/share/elasticsearch/data
         networks:
             - traefik
+    scraper:
+        container_name: stad-antwerpen-scraper
+        build: ./scraper
+        env_file: .env
+        depends_on:
+            - elasticsearch
+        labels:
+            - traefik.enable=true
+            - traefik.http.routers.backend.rule=Host(`$APP_URL`) && PathPrefix(`/scraper`)
+            - traefik.http.services.backend-service.loadbalancer.server.port=3000
 
 volumes:
     es-data-prod:
