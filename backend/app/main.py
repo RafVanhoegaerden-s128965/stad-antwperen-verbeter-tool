@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from api.cohere_llm import get_suggestions
 
 app = FastAPI()
 
@@ -6,6 +7,7 @@ app = FastAPI()
 def read_root():
     return {"Hello": "World"}
 
-@app.get("/items/{item_id}")
-def read_item(item_id: int, q: str = None):
-    return {"item_id": item_id, "q": q}
+@app.post("/get_suggestions")
+def process_text_endpoint(text: str, text_type: str):
+    result = get_suggestions(text, text_type)
+    return {"result": result}
