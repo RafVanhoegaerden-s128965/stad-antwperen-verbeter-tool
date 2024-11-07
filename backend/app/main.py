@@ -1,7 +1,9 @@
+<<<<<<< backend/app/main.py
 from fastapi import FastAPI, HTTPException, Depends
 from pydantic import BaseModel
 from elasticsearch import Elasticsearch
 from elasticsearch.exceptions import NotFoundError
+from api.cohere_llm import get_suggestions
 
 app = FastAPI(
     title="Stad Antwerpen API",
@@ -24,6 +26,11 @@ def get_es_client():
 @app.get("/api")
 def read_root():
     return {"Hello": "World"}
+
+@app.post("/api/get_suggestions")
+def process_text_endpoint(text: str, text_type: str):
+    result = get_suggestions(text, text_type)
+    return {"result": result}
 
 @app.get("/api/items")
 def read_items(es: Elasticsearch = Depends(get_es_client)):
