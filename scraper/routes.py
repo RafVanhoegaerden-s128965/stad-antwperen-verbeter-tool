@@ -25,6 +25,6 @@ def post_data(data: dict):
         print(f"Successfully forwarded data for {url}")
     else:
         print(f"Failed to forward data for {url}, status code {response.status_code}")
-        raise HTTPException(status_code=500, detail="Failed to forward data to destination API")
+        # raise HTTPException(status_code=500, detail="Failed to forward data to destination API")
 
     return response
