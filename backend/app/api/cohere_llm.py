@@ -19,7 +19,7 @@ text_type_prompts = {
             "content": [
                 {
                     "type": "text",
-                    "text": "Huisstijlgids:\n```" + Path('data/rules/huisstijlgids 1-4.txt').read_text() + "\n```\n" + """
+                    "text": "Huisstijlgids:\n```" + Path('api/data/rules/huisstijlgids 1-4.txt').read_text() + "\n```\n" + """
 Generate a JSON giving list of corrections made to the text, including bad words, suggestions, and explanations. With fields "rule_reference", "incorrect_part", "corrected_part", "explanation", "severity".
 
 "rule_reference": The specific rule from the huisstijlgids that applies to this error. In the format 'X.Y Name'
@@ -127,7 +127,7 @@ def get_suggestions(text: str, text_type: TextType):
 if __name__ == '__main__':
     number = (sys.argv[1] if len(sys.argv) > 1 else 1)
 
-    input = Path(f'data/input/{number}.txt').read_text(encoding='utf-8')
+    input = Path(f'api/data/input/{number}.txt').read_text(encoding='utf-8')
     output = get_suggestions(input, TextType.article)
     output = output.removesuffix("```").removeprefix("```")
 

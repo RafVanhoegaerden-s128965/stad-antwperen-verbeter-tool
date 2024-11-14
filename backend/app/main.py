@@ -3,6 +3,8 @@ from pydantic import BaseModel
 from elasticsearch import Elasticsearch
 from elasticsearch.exceptions import NotFoundError
 from api.cohere_llm import get_suggestions
+import requests
+
 
 app = FastAPI(
     title="Stad Antwerpen API",
@@ -61,3 +63,33 @@ def create_item(item_id: str, item: Item, es: Elasticsearch = Depends(get_es_cli
             return {"item_id": item_id, "item": item}
         else:
             raise HTTPException(status_code=500, detail="Failed to create item")
+
+
+@app.get("/api/scrape")
+def scrape_data():
+    api_url = "http://stad-antwerpen-backend:8000/api/scraper"  # Scraper URL without parameters
+    
+    try:
+        response = requests.get(api_url)
+        response.raise_for_status()  # Raise an error for HTTP codes 4xx or 5xx
+        return response.json()  # Return JSON response from external scraper API
+    except requests.exceptions.RequestException as e:
+        raise HTTPException(status_code=500, detail=f"Failed to connect to scraper API: {str(e)}")
+
+# # Endpoint: Health check
+# @app.get("/health")
+# def health_check():
+#     return {"status": "ok"}
+
+# # Endpoint: Start scraping task
+# @app.post("/scrape/")
+# def start_scraping(url: str):
+#     try:
+#         task_id = str(uuid.uuid4())  # Generate a unique task ID
+#         result = scraper_module.scrape(url)
+#         # Store result in Elasticsearch
+#         es.index(index="scraping_results", id=task_id, body=result)
+#         return {"task_id": task_id, "status": "Scraping completed", "result": result}
+#     except Exception as e:
+#         raise HTTPException(status_code=500, detail=str(e))
+    
