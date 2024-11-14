@@ -1,8 +1,10 @@
 from fastapi import FastAPI, HTTPException, Depends
+from fastapi.responses import JSONResponse, Response
 from pydantic import BaseModel
 from elasticsearch import Elasticsearch
 from elasticsearch.exceptions import NotFoundError
-from api.cohere_llm import get_suggestions
+from api.cohere_llm import CohereLLM
+from api.openai_llm import OpenAILLM
 
 app = FastAPI(
     title="Stad Antwerpen API",
@@ -14,6 +16,12 @@ app = FastAPI(
 
 # Elasticsearch client
 es = Elasticsearch(["http://elasticsearch:9200"])
+
+# LLM setup, API keys loaded from environment variables
+COHERE_API_KEY = None
+OPENAI_API_KEY = None
+cohere_model = CohereLLM(api_key=COHERE_API_KEY)
+openai_model = OpenAILLM(api_key=OPENAI_API_KEY)
 
 class Item(BaseModel):
     name: str
@@ -27,9 +35,16 @@ def read_root():
     return {"Hello": "World"}
 
 @app.post("/api/get_suggestions")
-def process_text_endpoint(text: str, text_type: str):
-    result = get_suggestions(text, text_type)
-    return {"result": result}
+def process_text_endpoint(text: str, text_type: str, model: str = "cohere"):
+    if model.lower() == "cohere":
+        result = cohere_model.get_suggestions(text, text_type)
+    elif model.lower() == "openai":
+        result = openai_model.get_suggestions(text, text_type)
+    else:
+        return {"error": "Invalid model specified"}
+
+    # return JSONResponse(content=result)
+    return Response(content=str(result), media_type="application/json")
 
 @app.get("/api/items")
 def read_items(es: Elasticsearch = Depends(get_es_client)):
