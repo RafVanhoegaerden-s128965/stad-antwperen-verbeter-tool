@@ -16,6 +16,7 @@ chrome_options.add_argument("--disable-dev-shm-usage")
 
 # Selenium WebDriver
 service = Service(executable_path=os.getenv('CHROMEDRIVER_PATH'))
+# service = Service(executable_path='/opt/homebrew/bin/chromedriver')
 
 driver = webdriver.Chrome(service=service, options=chrome_options)
 
