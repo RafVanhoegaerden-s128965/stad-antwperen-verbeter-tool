@@ -65,16 +65,31 @@ def create_item(item_id: str, item: Item, es: Elasticsearch = Depends(get_es_cli
             raise HTTPException(status_code=500, detail="Failed to create item")
 
 
-@app.get("/api/scrape")
-def scrape_data():
-    api_url = "http://stad-antwerpen-backend:8000/api/scraper"  # Scraper URL without parameters
-    
+@app.get("/api/scraped_data")
+def get_scraped_data(es: Elasticsearch = Depends(get_es_client)):
     try:
-        response = requests.get(api_url)
-        response.raise_for_status()  # Raise an error for HTTP codes 4xx or 5xx
-        return response.json()  # Return JSON response from external scraper API
-    except requests.exceptions.RequestException as e:
-        raise HTTPException(status_code=500, detail=f"Failed to connect to scraper API: {str(e)}")
+        # Query om alle documenten op te halen
+        result = es.search(index="scraped_data", body={"query": {"match_all": {}}, "size": 10000})
+        items = [{"_id": hit["_id"], "_source": hit["_source"]} for hit in result["hits"]["hits"]]
+        return {"items": items, "total": result["hits"]["total"]["value"]}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to retrieve scraped data: {str(e)}")
+
+    
+@app.post("/api/scraper")
+async def save_to_elasticsearch(data: dict, es: Elasticsearch = Depends(get_es_client)):
+    try:
+        # Voeg alle JSON-data toe aan Elasticsearch in de "scraped_data" index
+        result = es.index(index="scraped_data", document=data)
+        
+        # Controleer of het document succesvol is opgeslagen
+        if result["result"] == "created":
+            return {"message": "Data successfully stored in Elasticsearch", "result": result}
+        else:
+            raise HTTPException(status_code=500, detail="Failed to store data in Elasticsearch")
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to communicate with Elasticsearch: {str(e)}")
 
 # # Endpoint: Health check
 # @app.get("/health")
