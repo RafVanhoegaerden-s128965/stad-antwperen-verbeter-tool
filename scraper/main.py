@@ -13,8 +13,8 @@ def main():
     urls = [
         'https://www.antwerpen.be/info/6425aa55d52b786c5e30501a/wist-je-dat-10-geschiedenis-weetjes-over-linkeroever',
         'https://www.antwerpen.be/info/een-studentenjob-bij-stad-antwerpen',
-        'https://visit.antwerpen.be/6-verbazingwekkende-dingen-die-je-nog-niet-wist-over-antwerpen-en-het-steen',
-        'https://www.antwerpen.be/nl/overzicht/sporting-a/wandelen/acht-voordelen-van-wandelen'
+        'https://visit.antwerpen.be/6-verbazingwekkende-dingen-die-je-nog-niet-wist-over-antwerpen-en-het-steen'
+        #'https://www.antwerpen.be/nl/overzicht/sporting-a/wandelen/acht-voordelen-van-wandelen'
     ]
     print("Starting Scraper...")
     for index, url in enumerate(urls):
