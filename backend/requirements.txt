@@ -4,3 +4,5 @@ elasticsearch
 pydantic
 beautifulsoup4
 requests
+
+elasticsearch==8.10.0

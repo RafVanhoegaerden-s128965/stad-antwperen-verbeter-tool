@@ -1,70 +1,63 @@
-from fastapi import FastAPI, HTTPException
-from elasticsearch import Elasticsearch
+from fastapi import FastAPI, HTTPException, Depends
 from pydantic import BaseModel
-from typing import List
-import uuid
-import scraper.scraper as scraper_module
+from elasticsearch import Elasticsearch
+from elasticsearch.exceptions import NotFoundError
+from api.cohere_llm import get_suggestions
 
-app = FastAPI()
+app = FastAPI(
+    title="Stad Antwerpen API",
+    version="1.0.0",
+    openapi_url="/api/openapi.json",
+    docs_url="/api/docs",
+    redoc_url="/api/redoc",
+)
 
-# ElasticSearch client
-es = Elasticsearch("http://localhost:9200")
+# Elasticsearch client
+es = Elasticsearch(["http://elasticsearch:9200"])
 
-# Data model for adding data to ElasticSearch
-class Document(BaseModel):
-    title: str
-    content: str
+class Item(BaseModel):
+    name: str
+    description: str = None
 
-# Endpoint: Health check
-@app.get("/health")
-def health_check():
-    return {"status": "ok"}
+def get_es_client():
+    return es
 
-# Endpoint: Start scraping task
-@app.post("/scrape/")
-def start_scraping(url: str):
+@app.get("/api")
+def read_root():
+    return {"Hello": "World"}
+
+@app.post("/api/get_suggestions")
+def process_text_endpoint(text: str, text_type: str):
+    result = get_suggestions(text, text_type)
+    return {"result": result}
+
+@app.get("/api/items")
+def read_items(es: Elasticsearch = Depends(get_es_client)):
     try:
-        task_id = str(uuid.uuid4())  # Generate a unique task ID
-        result = scraper_module.scrape(url)
-        # Store result in Elasticsearch
-        es.index(index="scraping_results", id=task_id, body=result)
-        return {"task_id": task_id, "status": "Scraping completed", "result": result}
+        result = es.search(index="items", body={"query": {"match_all": {}}, "size": 10000})
+        items = [{"item_id": hit["_id"], "item": hit["_source"]} for hit in result["hits"]["hits"]]
+        return {"items": items, "total": result["hits"]["total"]["value"]}
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail=f"Failed to retrieve items: {str(e)}")
 
-# Endpoint: Add new document to ElasticSearch
-@app.post("/data/")
-def add_document(doc: Document):
+@app.get("/api/items/{item_id}")
+def read_item(item_id: str, es: Elasticsearch = Depends(get_es_client)):
     try:
-        doc_id = str(uuid.uuid4())  # Generate a unique ID
-        es.index(index="documents", id=doc_id, body=doc.dict())
-        return {"message": "Document added", "doc_id": doc_id}
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        doc = es.get(index="items", id=item_id)
+        return {"item_id": item_id, "item": doc["_source"]}
+    except NotFoundError:
+        raise HTTPException(status_code=404, detail="Item not found")
 
-# Endpoint: Get document from ElasticSearch by ID
-@app.get("/data/{doc_id}")
-def get_document(doc_id: str):
+@app.post("/api/items/{item_id}")
+def create_item(item_id: str, item: Item, es: Elasticsearch = Depends(get_es_client)):
     try:
-        response = es.get(index="documents", id=doc_id)
-        return response["_source"]
-    except Exception as e:
-        raise HTTPException(status_code=404, detail="Document not found")
-
-# Endpoint: Update document in ElasticSearch by ID
-@app.put("/data/{doc_id}")
-def update_document(doc_id: str, doc: Document):
-    try:
-        es.update(index="documents", id=doc_id, body={"doc": doc.dict()})
-        return {"message": "Document updated"}
-    except Exception as e:
-        raise HTTPException(status_code=404, detail="Document not found")
-
-# Endpoint: Delete document from ElasticSearch by ID
-@app.delete("/data/{doc_id}")
-def delete_document(doc_id: str):
-    try:
-        es.delete(index="documents", id=doc_id)
-        return {"message": "Document deleted"}
-    except Exception as e:
-        raise HTTPException(status_code=404, detail="Document not found")
+        # Check if the item already exists
+        es.get(index="items", id=item_id)
+        raise HTTPException(status_code=400, detail="Item already exists")
+    except NotFoundError:
+        # Item doesn't exist, so we can create it
+        result = es.index(index="items", id=item_id, document=item.dict())
+        if result["result"] == "created":
+            return {"item_id": item_id, "item": item}
+        else:
+            raise HTTPException(status_code=500, detail="Failed to create item")
