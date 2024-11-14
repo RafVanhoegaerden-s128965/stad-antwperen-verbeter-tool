@@ -1,10 +1,17 @@
-from fastapi import FastAPI, HTTPException, Depends
+import logging
+from fastapi import FastAPI, HTTPException, Depends, Request, status
+from fastapi.exceptions import RequestValidationError
+from fastapi.params import Query
 from fastapi.responses import JSONResponse, Response
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from elasticsearch import Elasticsearch
 from elasticsearch.exceptions import NotFoundError
 from api.cohere_llm import CohereLLM
 from api.openai_llm import OpenAILLM
+
+import re
+import json
 
 app = FastAPI(
     title="Stad Antwerpen API",
@@ -12,6 +19,14 @@ app = FastAPI(
     openapi_url="/api/openapi.json",
     docs_url="/api/docs",
     redoc_url="/api/redoc",
+)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:4200"],  # Angular dev server URL
+    allow_credentials=True,
+    allow_methods=["*"],  # Allow all methods (GET, POST, etc.)
+    allow_headers=["*"],  # Allow all headers
 )
 
 # Elasticsearch client
@@ -34,17 +49,64 @@ def get_es_client():
 def read_root():
     return {"Hello": "World"}
 
+class GetSuggestionsBody(BaseModel):
+    text: str
+    text_type: str
+
 @app.post("/api/get_suggestions")
-def process_text_endpoint(text: str, text_type: str, model: str = "cohere"):
+def process_text_endpoint(request: GetSuggestionsBody, 
+    model: str = "cohere",
+    temperature: float = Query(0.65, ge=0, le=1),
+    frequency_penalty: float = Query(0.0, ge=0, le=1),
+    presence_penalty: float = Query(0.0, ge=0, le=1)):
+    text = request.text
+    text_type = request.text_type
+    text_type = text_type.strip().lower().capitalize()
     if model.lower() == "cohere":
-        result = cohere_model.get_suggestions(text, text_type)
+        result = cohere_model.get_suggestions(
+            text,
+            text_type,
+            temperature=temperature,
+            frequency_penalty=frequency_penalty,
+            presence_penalty=presence_penalty
+            )
     elif model.lower() == "openai":
-        result = openai_model.get_suggestions(text, text_type)
+        result = openai_model.get_suggestions(
+            text,
+            text_type,
+            temperature=temperature,
+            frequency_penalty=frequency_penalty,
+            presence_penalty=presence_penalty
+            )
     else:
         return {"error": "Invalid model specified"}
+    result_dict = result if isinstance(result, dict) else json.loads(result)
+    
+    # Add startPos and endPos to each correction based on `incorrect_part` in `text`
+    for correction in result_dict.get("corrections", []):
+        incorrect_part = correction.get("incorrect_part", "")
+        
+        # Find the start and end position of `incorrect_part` in the `text`
+        match = re.search(re.escape(incorrect_part), text)
+        
+        if match:
+            start_pos = match.start()
+            end_pos = match.end()
+        else:
+            start_pos = 0
+            end_pos = 0
 
-    # return JSONResponse(content=result)
-    return Response(content=str(result), media_type="application/json")
+        # Add info to the correction
+        correction["info"] = {
+            "startPos": start_pos,
+            "endPos": end_pos
+        }
+
+    # Convert result_dict back to JSON string
+    response_content = json.dumps(result_dict)
+    
+    # Return response as JSON
+    return Response(content=response_content, media_type="application/json")
 
 @app.get("/api/items")
 def read_items(es: Elasticsearch = Depends(get_es_client)):

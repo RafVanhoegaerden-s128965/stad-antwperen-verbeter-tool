@@ -56,7 +56,13 @@ class OpenAILLM:
       }
 
     # Function to process text and call Cohere API
-    def get_suggestions_stream(self, text: str, text_type: TextType):
+    def get_suggestions_stream(
+      self,
+      text: str,
+      text_type: TextType,
+      temperature: float = 0.65,
+      frequency_penalty: float = 0.0,
+      presence_penalty: float = 0.0):
         if not any(text_type == item.value for item in TextType):
             return "Invalid text type"
         
@@ -70,11 +76,11 @@ class OpenAILLM:
         with self.client.chat.completions.create(
             model="gpt-4o",
             messages=messages,
-            temperature=0.65,
+                        temperature=temperature,
             max_tokens=2048,
             top_p=1,
-            frequency_penalty=0,
-            presence_penalty=0,
+                        frequency_penalty=frequency_penalty,
+                        presence_penalty=presence_penalty,
             response_format={
                 "type": "json_schema",
                 "json_schema": {
@@ -142,12 +148,19 @@ class OpenAILLM:
         
         return response_text
 
-    def get_suggestions(self, text: str, text_type: TextType):
-        if not any(text_type == item.value for item in TextType):
+    def get_suggestions(
+      self,
+      text: str,
+      text_type: TextType,
+      temperature: float = 0.65,
+      frequency_penalty: float = 0.0,
+      presence_penalty: float = 0.0
+      ):
+        if not any(text_type.lower() == item.value.lower() for item in TextType):
             return {"error": "Invalid text type"}
         
         output = ""
-        for content in self.get_suggestions_stream(text, text_type):
+        for content in self.get_suggestions_stream(text, text_type, temperature=temperature, frequency_penalty=frequency_penalty, presence_penalty=presence_penalty):
             output += content
         output = output.removesuffix("```").removeprefix("```")
 

@@ -57,8 +57,13 @@ class CohereLLM:
             ]
         }
     
-    def get_suggestions(self, text: str, text_type: TextType):
-        if not any(text_type == item.value for item in TextType):
+    def get_suggestions(self,
+                        text: str,
+                        text_type: TextType,
+                        temperature: float = 0.65,
+                        frequency_penalty: float = 0.0,
+                        presence_penalty: float = 0.0):
+        if not any(text_type.lower() == item.value.lower() for item in TextType):
             return {"error": "Invalid text type"}
 
         messages = self.prompt_dict[text_type]
@@ -68,7 +73,9 @@ class CohereLLM:
         print("Calling API")
         response = self.client.chat(model="command-r-plus-08-2024",
                         messages=messages,
-                        temperature=0.65,
+                        temperature=temperature,
+                        frequency_penalty=frequency_penalty,
+                        presence_penalty=presence_penalty,
                         response_format={
                             "type": "json_object",
                             "schema": {
