@@ -8,8 +8,8 @@ def post_data(data: dict):
     url = data.get("url")
     text = data.get("text")
 
-    if not url or not text:
-        raise HTTPException(status_code=400, detail="Missing required fields: url and text")
+    #if not url or not text:
+    #    raise HTTPException(status_code=400, detail="Missing required fields: url and text")
 
     # The API endpoint for the backend service
     api_url = "http://stad-antwerpen-backend:8000/api/scraper"
