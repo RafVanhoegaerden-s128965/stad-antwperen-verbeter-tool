@@ -27,79 +27,97 @@ def close_driver():
     driver.quit()
 
 
-def crawl(base_url):
-    """Capture sub-URLs dynamically loaded by JavaScript on the page."""
-    driver.get(base_url)
+def crawl(base_url, whitelist):
+    """
+    Continuously crawl pages starting from the base URL,
+    only visiting URLs that match the whitelist.
+    """
+    to_crawl = [base_url]  # Queue of URLs to crawl
+    crawled = set()        # Set of already visited URLs
+    all_article_urls = []  # List to store unique crawling results
 
-    try:
-        WebDriverWait(driver, 5).until(
-            EC.presence_of_all_elements_located((By.TAG_NAME, "a"))
-        )
-    except TimeoutException:
-        print("Page load timeout")
-        return []
-
-    # Print all <a> tags found after the wait
-    all_links = driver.find_elements(By.TAG_NAME, "a")
-    article_urls = set()
     excluded_extensions = (
-        ".css",
-        ".js",
-        ".png",
-        ".jpg",
-        ".jpeg",
-        ".gif",
-        ".svg"
+        ".css", ".js", ".png", ".jpg", ".jpeg", ".gif", ".svg", ".woff", "#main"
     )
 
     excluded_terms = (
-        "tel:",
-        "mailto:",
-        "assets-proxy",
-        "feature1",
-        "icon",
-        "img",
-        "javascript:void(0);"
+        "tel:", "mailto:", "assets-proxy", "feature1", "icon", "img",
+        "javascript:", "/api", "/srv", "cookiebeleid"
     )
 
-    for link in all_links:
-        href = link.get_attribute("href")
-        if href:
-            # Filter out unwanted links based on the file extensions and terms
-            if not href.endswith(excluded_extensions) and not any(term in href for term in excluded_terms):
-                article_urls.add(href)
-                print(f"Kept: {href}")
-            else:
-                print(f"Filtered out: {href}")
+    def is_valid_url(url):
+        """
+        Check if a URL is valid based on whitelist, excluded extensions, and terms.
+        """
+        return (
+            any(url.startswith(allowed) for allowed in whitelist)  # Whitelist check
+            and not url.endswith(excluded_extensions)  # Excluded extensions
+            and not any(term in url for term in excluded_terms)  # Excluded terms
+        )
 
-    # Ensure we capture network requests via Selenium Wire
-    print("Waiting for network requests to be captured...")
-    # Increase the wait time to allow all requests to finish
-    WebDriverWait(driver, 5).until(lambda driver: len(driver.requests) > 0)
+    while to_crawl:
+        current_url = to_crawl.pop(0)  # Get the next URL from the queue
+        if current_url in crawled:
+            continue  # Skip if already visited
 
-    # Capture URLs from network requests
-    print("Capturing network requests:")
-    for request in driver.requests:
-        if request.response:
-            url = request.url
-            print(f"Request URL: {url}")
+        # Skip URLs not in the whitelist
+        if not is_valid_url(current_url):
+            print(f"Skipped (not in whitelist): {current_url}")
+            continue
 
-            # Check if URL is relative or matches base_url
-            if url.startswith(base_url) or url.startswith("/"):
-                # Handle relative URLs by prepending the base URL
-                if url.startswith("/"):
-                    url = base_url + url
+        print(f"Crawling: {current_url}")
+        try:
+            driver.get(current_url)
+            crawled.add(current_url)  # Mark this URL as visited
+            all_article_urls.append(current_url)  # Save the visited URL
 
-                # Filter out URLs with excluded extensions and terms
-                if not url.endswith(excluded_extensions) and not any(term in url for term in excluded_terms):
-                    article_urls.add(url)
-                    print(f"Kept: {url}")
-                else:
-                    print(f"Filtered out: {url}")
-            else:
-                print(f"Ignored: {url}")
+            # Wait for JavaScript-loaded content
+            try:
+                WebDriverWait(driver, 5).until(
+                    lambda d: len(d.find_elements(By.TAG_NAME, "a")) > 0
+                )
+            except TimeoutException:
+                print("No new content loaded.")
+                continue
 
-    return list(article_urls)
+            # Collect all visible links after JS execution
+            all_links = driver.find_elements(By.TAG_NAME, "a")
+            for link in all_links:
+                try:
+                    href = link.get_attribute("href")
+                    if href:
+                        # Handle relative URLs
+                        if href.startswith("/"):
+                            href = base_url + href
+
+                        # Check validity before adding to the queue
+                        if href not in crawled and href not in to_crawl and is_valid_url(href):
+                            to_crawl.append(href)  # Add new URLs to crawl queue
+                except Exception as e:
+                    print(f"Error processing link: {e}")
+                    continue
+
+            # Capture URLs from network requests
+            for request in driver.requests:
+                try:
+                    if request.response:
+                        url = request.url
+                        if url.startswith("/"):  # Handle relative URLs
+                            url = base_url + url
+                        if url not in crawled and url not in to_crawl and is_valid_url(url):
+                            to_crawl.append(url)  # Add new URLs to crawl queue
+                except Exception as e:
+                    print(f"Error processing network request: {e}")
+                    continue
+
+            print(f"Current to_crawl queue: {to_crawl}")
+            print(f"Visited URLs: {crawled}")
+
+        except Exception as e:
+            print(f"Error crawling {current_url}: {e}")
+            continue
+
+    return all_article_urls
 
 
 def scrape(url):

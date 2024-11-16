@@ -4,12 +4,16 @@ from routes import *
 
 def main():
 
-    # Crawl over the domain to find all the urls
-
-    print("[    Starting Crawl    ]")
     domain = "https://www.antwerpen.be"
-    urls = crawl(domain)
-    print("[    Stopping Crawl    ]")
+    whitelist = [
+        "https://antwerpen.be",
+        "https://www.antwerpen.be",
+        "https://visit.antwerpen.be/",
+        "https://www.visit.antwerpen.be/"
+    ]
+
+    # Crawl over the domain to find all the urls
+    urls = crawl(domain, whitelist)
 
     for index, url in enumerate(urls):
         # Scrape each url to get all the content
