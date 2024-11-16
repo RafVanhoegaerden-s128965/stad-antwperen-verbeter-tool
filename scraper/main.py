@@ -1,3 +1,4 @@
+from crawler import *
 from scraper import *
 from routes import *
 
