@@ -13,7 +13,7 @@ RUN apt-get update && apt-get install -y \
 RUN pip install -r requirements.txt
 
 # Set the working directory
-WORKDIR /
+WORKDIR /app
 
 # Set the environment variable for the Chrome binary location
 ENV CHROME_BIN=/usr/bin/chromium
