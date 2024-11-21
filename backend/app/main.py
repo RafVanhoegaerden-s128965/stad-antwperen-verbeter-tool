@@ -138,3 +138,48 @@ def create_item(item_id: str, item: Item, es: Elasticsearch = Depends(get_es_cli
             return {"item_id": item_id, "item": item}
         else:
             raise HTTPException(status_code=500, detail="Failed to create item")
+
+
+@app.get("/api/scraped_data")
+def get_scraped_data(es: Elasticsearch = Depends(get_es_client)):
+    try:
+        # Query om alle documenten op te halen
+        result = es.search(index="scraped_data", body={"query": {"match_all": {}}, "size": 10000})
+        items = [{"_id": hit["_id"], "_source": hit["_source"]} for hit in result["hits"]["hits"]]
+        return {"items": items, "total": result["hits"]["total"]["value"]}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to retrieve scraped data: {str(e)}")
+
+    
+@app.post("/api/scraper")
+async def save_to_elasticsearch(data: dict, es: Elasticsearch = Depends(get_es_client)):
+    try:
+        # Voeg alle JSON-data toe aan Elasticsearch in de "scraped_data" index
+        result = es.index(index="scraped_data", document=data)
+        
+        # Controleer of het document succesvol is opgeslagen
+        if result["result"] == "created":
+            return {"message": "Data successfully stored in Elasticsearch", "result": result}
+        else:
+            raise HTTPException(status_code=500, detail="Failed to store data in Elasticsearch")
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to communicate with Elasticsearch: {str(e)}")
+
+# # Endpoint: Health check
+# @app.get("/health")
+# def health_check():
+#     return {"status": "ok"}
+
+# # Endpoint: Start scraping task
+# @app.post("/scrape/")
+# def start_scraping(url: str):
+#     try:
+#         task_id = str(uuid.uuid4())  # Generate a unique task ID
+#         result = scraper_module.scrape(url)
+#         # Store result in Elasticsearch
+#         es.index(index="scraping_results", id=task_id, body=result)
+#         return {"task_id": task_id, "status": "Scraping completed", "result": result}
+#     except Exception as e:
+#         raise HTTPException(status_code=500, detail=str(e))
+    

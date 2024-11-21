@@ -130,8 +130,8 @@ if __name__ == '__main__':
     
     client = CohereLLM()
 
-    input = Path(f'data/input/{number}.txt').read_text(encoding='utf-8')
-    output = client.get_suggestions(input, TextType.article)
+    input = Path(f'api/data/input/{number}.txt').read_text(encoding='utf-8')
+    output = get_suggestions(input, TextType.article)
     output = output.removesuffix("```").removeprefix("```")
 
     json_object = json.loads(output)

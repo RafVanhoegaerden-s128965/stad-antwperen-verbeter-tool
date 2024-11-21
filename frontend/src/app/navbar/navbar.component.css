@@ -1,0 +1,52 @@
+.container {
+  width: 100%;
+}
+
+/* navbar.component.css */
+:host {
+  display: block;
+  width: 100%;
+}
+
+.navbar {
+  height: 10vh;
+  width: 100%;
+  background-color: #e6e8e6;
+}
+
+.container {
+  height: 100%;
+}
+
+.nav-content {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.logo-container {
+  height: 100%;
+  display: flex;
+  align-content: start;
+}
+
+.logo-img {
+  height: 100%;
+  width: auto;
+  object-fit: contain;
+}
+
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.breadcrumb a {
+  color: #161925;
+  text-decoration: none;
+  position: relative;
+  font-weight: 600;
+  font-size: 20px;
+}

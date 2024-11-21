@@ -7,6 +7,8 @@ import sys
 import os
 
 # Enum for text medium
+
+
 class TextType(str, Enum):
     article = "Article"
 
@@ -185,4 +187,5 @@ if __name__ == '__main__':
     json_formatted_str = json.dumps(json_object, indent=2)
 
     print(json_formatted_str)
-    Path(f'data/output/openai/{number}.json').write_text(json_formatted_str, encoding='utf-8')
+    Path(
+        f'data/output/openai/{number}.json').write_text(json_formatted_str, encoding='utf-8')
