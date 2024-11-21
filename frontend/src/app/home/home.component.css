@@ -1,0 +1,144 @@
+.container {
+  width: 100%;
+  height: 90vh;
+  align-self: start;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 2rem;
+}
+
+.title {
+  font-size: 32px;
+  font-weight: 600;
+  color: #161925;
+}
+
+.form {
+  flex: 0.8;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 2rem;
+}
+
+.text-fields {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3rem;
+  align-items: stretch;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.label {
+  font-size: 1rem;
+  font-weight: 500;
+  color: #161925;
+}
+
+.label-helper {
+  display: flex;
+  align-self: center;
+  font-size: 0.7rem;
+  font-weight: 500;
+  color: #666;
+}
+
+.text-area {
+  height: 42vh;
+  padding: 0.75rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-family: "Hind", sans-serif;
+  font-size: 1rem;
+  resize: none;
+  overflow: auto;
+}
+
+.text-area:focus {
+  outline: none;
+  border-color: #666;
+}
+
+.controls {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 1rem;
+}
+
+.select-container {
+  display: flex;
+  flex-direction: column;
+  min-width: 220px;
+}
+
+.select {
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-family: "Hind", sans-serif;
+  font-size: 1rem;
+}
+
+.buttons {
+  display: flex;
+  gap: 1rem;
+}
+
+.button {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 4px;
+  font-family: "Hind", sans-serif;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.generalize {
+  background-color: #e0e0e0;
+  color: #333;
+}
+
+.generalize:hover {
+  background-color: #d0d0d0;
+}
+
+.finalize {
+  background-color: #007bff;
+  color: white;
+}
+
+.finalize:hover {
+  background-color: #0056b3;
+}
+
+@media (max-width: 768px) {
+  .text-fields {
+    grid-template-columns: 1fr;
+  }
+
+  .controls {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .buttons {
+    justify-content: stretch;
+  }
+
+  .button {
+    flex: 1;
+  }
+}
