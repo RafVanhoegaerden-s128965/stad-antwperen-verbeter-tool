@@ -16,6 +16,7 @@ def main():
     # Crawl over the domain to find all the urls
     urls = crawl(domain, whitelist)
 
+
     for index, url in enumerate(urls):
         # Scrape each url to get all the content
         lines = scrape(url)

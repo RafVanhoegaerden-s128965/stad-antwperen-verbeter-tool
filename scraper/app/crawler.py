@@ -1,7 +1,6 @@
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.common.exceptions import TimeoutException
-
 from driver import *
 
 
@@ -9,11 +8,13 @@ def crawl(base_url, whitelist):
     """
     Continuously crawl pages starting from the base URL,
     only visiting URLs that match the whitelist.
+    Saves and returns only article URLs that meet the criteria.
     """
     driver = get_driver()
     to_crawl = [base_url]  # Queue of URLs to crawl
     crawled = set()        # Set of already visited URLs
-    all_article_urls = []  # List to store unique crawling results
+    all_article_urls = []  # List to store unique article URLs
+    limit = 10
 
     excluded_extensions = (
         ".css", ".js", ".png", ".jpg", ".jpeg", ".gif", ".svg", ".woff", "#main", ".htm", ".htm#"
@@ -24,10 +25,10 @@ def crawl(base_url, whitelist):
         "javascript:", "/api", "/srv", "cookiebeleid"
     )
 
-    while to_crawl:
+    while to_crawl and len(all_article_urls) < limit:
         current_url = to_crawl.pop(0)  # Get the next URL from the queue
         if current_url in crawled:
-            continue  # Skip if already visited
+            continue
 
         # Skip URLs not in the whitelist
         if not any(current_url.startswith(allowed) for allowed in whitelist):
@@ -38,16 +39,17 @@ def crawl(base_url, whitelist):
         try:
             driver.get(current_url)
             crawled.add(current_url)  # Mark this URL as visited
-            all_article_urls.append(current_url)  # Save the visited URL
 
-            # Wait for JavaScript-loaded content
+            # Check if the page contains the target <div> elements
             try:
                 WebDriverWait(driver, 5).until(
-                    lambda d: len(d.find_elements(By.TAG_NAME, "a")) > 0
+                    lambda d: d.find_elements(By.XPATH, "//div[contains(@class, 'paragraph')]")
                 )
+                # If found, add the URL to the article list
+                all_article_urls.append(current_url)
+                print(f"Article URL found: {current_url}")
             except TimeoutException:
-                print("No new content loaded.")
-                continue
+                print(f"No Article found in {current_url}")
 
             # Collect all visible links after JS execution
             all_links = driver.find_elements(By.TAG_NAME, "a")
@@ -71,42 +73,9 @@ def crawl(base_url, whitelist):
                     print(f"Error processing link: {e}")
                     continue
 
-            # Capture URLs from network requests
-            for request in driver.requests:
-                try:
-                    if request.response:
-                        url = request.url
-                        if url.startswith("/"):  # Handle relative URLs
-                            url = base_url + url
-                        if (
-                            url not in crawled and url not in to_crawl
-                            and any(url.startswith(allowed) for allowed in whitelist)
-                            and not url.endswith(excluded_extensions)
-                            and not any(term in url for term in excluded_terms)
-                        ):
-                            to_crawl.append(url)  # Add new URLs to crawl queue
-                except Exception as e:
-                    print(f"Error processing network request: {e}")
-                    continue
-
-            # Limit dynamic content exploration
-            dynamically_loaded_links = driver.find_elements(By.TAG_NAME, "a")
-            for link in dynamically_loaded_links:
-                try:
-                    href = link.get_attribute("href")
-                    if (
-                        href and href not in crawled and href not in to_crawl
-                        and any(href.startswith(allowed) for allowed in whitelist)
-                        and not href.endswith(excluded_extensions)
-                        and not any(term in href for term in excluded_terms)
-                    ):
-                        to_crawl.append(href)
-                except Exception as e:
-                    print(f"Error processing dynamically loaded link: {e}")
-                    continue
-
-            print(f"Current to_crawl queue: {to_crawl}")
-            print(f"Visited URLs: {crawled}")
+            print(f"To be crawled count: {len(to_crawl)}")
+            print(f"Visited URLs count: {len(crawled)}")
+            print(f"Visited URLs count: {len(crawled)}")
 
         except Exception as e:
             print(f"Error crawling {current_url}: {e}")

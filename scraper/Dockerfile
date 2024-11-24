@@ -20,4 +20,5 @@ ENV CHROME_BIN=/usr/bin/chromium
 ENV CHROMEDRIVER_PATH=/usr/bin/chromedriver
 
 # Run the main application
-CMD ["python3", "main.py"]
+CMD ["python3", "-u", "main.py"]
+

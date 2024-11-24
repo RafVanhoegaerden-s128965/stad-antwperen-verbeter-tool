@@ -35,7 +35,7 @@ def clean_html(soup):
 
             # Handle superscripts: add space after each <sup>
             for sup in element.find_all('sup'):
-                text = text.replace(sup.get_text(), sup.get_text() + ' ')  # Adding a space after the superscript
+                sup.insert_after(' ')  # Adding a space after the superscript
 
             # Clean up extra spaces created by the above replacement
             text = ' '.join(text.split())  # This removes any extra whitespace
