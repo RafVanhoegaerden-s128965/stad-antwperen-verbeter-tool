@@ -1,18 +1,24 @@
-import logging
-from fastapi import FastAPI, HTTPException, Depends, Request, status
-from fastapi.exceptions import RequestValidationError
-from fastapi.params import Query
-from fastapi.responses import JSONResponse, Response
+from fastapi import FastAPI, Request, status
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel
-from elasticsearch import Elasticsearch
-from elasticsearch.exceptions import NotFoundError
-from api.cohere_llm import CohereLLM
-from api.openai_llm import OpenAILLM
+from fastapi.exceptions import RequestValidationError
+from fastapi.responses import JSONResponse
+import logging
+import os
 
-import re
-import json
+# Import routers
+from routers import (
+    raw_texts,
+    suggestions,
+    final_texts,
+    elastic,
+    scraper
+)
 
+# Setup logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+# Initialize FastAPI app
 app = FastAPI(
     title="Stad Antwerpen API",
     version="1.0.0",
@@ -21,165 +27,64 @@ app = FastAPI(
     redoc_url="/api/redoc",
 )
 
+# CORS middleware configuration
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:4200"],  # Angular dev server URL
+    allow_origins=["*"],
     allow_credentials=True,
-    allow_methods=["*"],  # Allow all methods (GET, POST, etc.)
-    allow_headers=["*"],  # Allow all headers
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
-# Elasticsearch client
-es = Elasticsearch(["http://elasticsearch:9200"])
+# Error handler
+@app.exception_handler(RequestValidationError)
+async def validation_exception_handler(request: Request, exc: RequestValidationError):
+    return JSONResponse(
+        status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+        content={"detail": exc.errors()}
+    )
 
-# LLM setup, API keys loaded from environment variables
-COHERE_API_KEY = None
-OPENAI_API_KEY = None
-cohere_model = CohereLLM(api_key=COHERE_API_KEY)
-openai_model = OpenAILLM(api_key=OPENAI_API_KEY)
+# Include all routers
+app.include_router(
+    raw_texts.router,
+    prefix="/api",
+    tags=["Raw Texts"]
+)
 
-class Item(BaseModel):
-    name: str
-    description: str = None
+app.include_router(
+    suggestions.router,
+    prefix="/api",
+    tags=["Suggestions"]
+)
 
-def get_es_client():
-    return es
+app.include_router(
+    final_texts.router,
+    prefix="/api",
+    tags=["Final Texts"]
+)
 
-@app.get("/api")
-def read_root():
-    return {"Hello": "World"}
+app.include_router(
+    elastic.router,
+    prefix="/api",
+    tags=["Elasticsearch"]
+)
 
-class GetSuggestionsBody(BaseModel):
-    text: str
-    text_type: str
+app.include_router(
+    scraper.router,
+    prefix="/api",
+    tags=["Scraper"]
+)
 
-@app.post("/api/get_suggestions")
-def process_text_endpoint(request: GetSuggestionsBody, 
-    model: str = "cohere",
-    temperature: float = Query(0.65, ge=0, le=1),
-    frequency_penalty: float = Query(0.0, ge=0, le=1),
-    presence_penalty: float = Query(0.0, ge=0, le=1)):
-    text = request.text
-    text_type = request.text_type
-    text_type = text_type.strip().lower().capitalize()
-    if model.lower() == "cohere":
-        result = cohere_model.get_suggestions(
-            text,
-            text_type,
-            temperature=temperature,
-            frequency_penalty=frequency_penalty,
-            presence_penalty=presence_penalty
-            )
-    elif model.lower() == "openai":
-        result = openai_model.get_suggestions(
-            text,
-            text_type,
-            temperature=temperature,
-            frequency_penalty=frequency_penalty,
-            presence_penalty=presence_penalty
-            )
-    else:
-        return {"error": "Invalid model specified"}
-    result_dict = result if isinstance(result, dict) else json.loads(result)
-    
-    # Add startPos and endPos to each correction based on `incorrect_part` in `text`
-    for correction in result_dict.get("corrections", []):
-        incorrect_part = correction.get("incorrect_part", "")
-        
-        # Find the start and end position of `incorrect_part` in the `text`
-        match = re.search(re.escape(incorrect_part), text)
-        
-        if match:
-            start_pos = match.start()
-            end_pos = match.end()
-        else:
-            start_pos = 0
-            end_pos = 0
+# Health check endpoint
+@app.get("/health", tags=["Health"])
+def health_check():
+    return {"status": "healthy"}
 
-        # Add info to the correction
-        correction["info"] = {
-            "startPos": start_pos,
-            "endPos": end_pos
-        }
-
-    # Convert result_dict back to JSON string
-    response_content = json.dumps(result_dict)
-    
-    # Return response as JSON
-    return Response(content=response_content, media_type="application/json")
-
-@app.get("/api/items")
-def read_items(es: Elasticsearch = Depends(get_es_client)):
-    try:
-        result = es.search(index="items", body={"query": {"match_all": {}}, "size": 10000})
-        items = [{"item_id": hit["_id"], "item": hit["_source"]} for hit in result["hits"]["hits"]]
-        return {"items": items, "total": result["hits"]["total"]["value"]}
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to retrieve items: {str(e)}")
-
-@app.get("/api/items/{item_id}")
-def read_item(item_id: str, es: Elasticsearch = Depends(get_es_client)):
-    try:
-        doc = es.get(index="items", id=item_id)
-        return {"item_id": item_id, "item": doc["_source"]}
-    except NotFoundError:
-        raise HTTPException(status_code=404, detail="Item not found")
-
-@app.post("/api/items/{item_id}")
-def create_item(item_id: str, item: Item, es: Elasticsearch = Depends(get_es_client)):
-    try:
-        # Check if the item already exists
-        es.get(index="items", id=item_id)
-        raise HTTPException(status_code=400, detail="Item already exists")
-    except NotFoundError:
-        # Item doesn't exist, so we can create it
-        result = es.index(index="items", id=item_id, document=item.dict())
-        if result["result"] == "created":
-            return {"item_id": item_id, "item": item}
-        else:
-            raise HTTPException(status_code=500, detail="Failed to create item")
-
-
-@app.get("/api/scraped_data")
-def get_scraped_data(es: Elasticsearch = Depends(get_es_client)):
-    try:
-        # Query om alle documenten op te halen
-        result = es.search(index="scraped_data", body={"query": {"match_all": {}}, "size": 10000})
-        items = [{"_id": hit["_id"], "_source": hit["_source"]} for hit in result["hits"]["hits"]]
-        return {"items": items, "total": result["hits"]["total"]["value"]}
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to retrieve scraped data: {str(e)}")
-
-    
-@app.post("/api/scraper")
-async def save_to_elasticsearch(data: dict, es: Elasticsearch = Depends(get_es_client)):
-    try:
-        # Voeg alle JSON-data toe aan Elasticsearch in de "scraped_data" index
-        result = es.index(index="scraped_data", document=data)
-        
-        # Controleer of het document succesvol is opgeslagen
-        if result["result"] == "created":
-            return {"message": "Data successfully stored in Elasticsearch", "result": result}
-        else:
-            raise HTTPException(status_code=500, detail="Failed to store data in Elasticsearch")
-
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to communicate with Elasticsearch: {str(e)}")
-
-# # Endpoint: Health check
-# @app.get("/health")
-# def health_check():
-#     return {"status": "ok"}
-
-# # Endpoint: Start scraping task
-# @app.post("/scrape/")
-# def start_scraping(url: str):
-#     try:
-#         task_id = str(uuid.uuid4())  # Generate a unique task ID
-#         result = scraper_module.scrape(url)
-#         # Store result in Elasticsearch
-#         es.index(index="scraping_results", id=task_id, body=result)
-#         return {"task_id": task_id, "status": "Scraping completed", "result": result}
-#     except Exception as e:
-#         raise HTTPException(status_code=500, detail=str(e))
-    
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(
+        "main:app",
+        host="0.0.0.0",
+        port=8000,
+        reload=True
+    )

@@ -12,7 +12,7 @@ def post_data(data: dict):
         raise HTTPException(status_code=400, detail="Missing required fields: url and text")
 
     # The API endpoint for the backend service
-    api_url = "http://stad-antwerpen-backend:8000/api/scraper"
+    api_url = "http://stad-antwerpen-backend:8000/api/elastic/scraper_data"
     payload = {
         'url': url,
         'text': text
