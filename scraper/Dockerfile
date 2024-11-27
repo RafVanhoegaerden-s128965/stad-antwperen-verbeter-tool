@@ -13,11 +13,12 @@ RUN apt-get update && apt-get install -y \
 RUN pip install -r requirements.txt
 
 # Set the working directory
-WORKDIR /
+WORKDIR /app
 
 # Set the environment variable for the Chrome binary location
 ENV CHROME_BIN=/usr/bin/chromium
 ENV CHROMEDRIVER_PATH=/usr/bin/chromedriver
 
 # Run the main application
-CMD ["python3", "main.py"]
+CMD ["python3", "-u", "main.py"]
+

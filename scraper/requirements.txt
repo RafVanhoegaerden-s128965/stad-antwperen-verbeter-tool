@@ -2,3 +2,5 @@ selenium==4.25.0
 bs4==0.0.2
 requests==2.32.3
 fastapi==0.115.4
+selenium-wire==5.1.0
+blinker==1.7.0
