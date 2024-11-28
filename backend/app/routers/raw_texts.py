@@ -4,11 +4,15 @@ from dependencies.elasticsearch import get_es_client
 from models.schemas import RawTextBody
 import datetime
 import hashlib
+from dependencies.auth import get_current_user
 
 router = APIRouter()
 
 @router.get("/raw_texts")
-def get_all_raw_texts(es: Elasticsearch = Depends(get_es_client)):
+def get_all_raw_texts(
+    current_user: str = Depends(get_current_user),
+    es: Elasticsearch = Depends(get_es_client)
+):
     try:
         result = es.search(
             index="raw_texts",
@@ -32,6 +36,7 @@ def get_all_raw_texts(es: Elasticsearch = Depends(get_es_client)):
 @router.get("/raw_text/{raw_text_id}")
 def get_raw_text_by_id(
     raw_text_id: str,
+    current_user: str = Depends(get_current_user),
     es: Elasticsearch = Depends(get_es_client)
 ):
     try:
@@ -48,6 +53,7 @@ def get_raw_text_by_id(
 @router.post("/raw_text")
 def create_raw_text(
     request: RawTextBody,
+    current_user: str = Depends(get_current_user),
     es: Elasticsearch = Depends(get_es_client)
 ):
     text = request.text
@@ -70,6 +76,7 @@ def create_raw_text(
 def update_raw_text(
     raw_text_id: str, 
     request: RawTextBody,
+    current_user: str = Depends(get_current_user),
     es: Elasticsearch = Depends(get_es_client)
 ):
     try:
