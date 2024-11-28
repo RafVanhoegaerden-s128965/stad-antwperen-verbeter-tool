@@ -28,6 +28,7 @@ export class AuthService {
       }
 
       const data = await response.json();
+      console.log('Login response:', data);
       this.setToken(data.access_token);
       this.isAuthenticatedSubject.next(true);
       return true;
@@ -43,10 +44,13 @@ export class AuthService {
   }
 
   getToken(): string | null {
-    return localStorage.getItem(this.tokenKey);
+    const token = localStorage.getItem(this.tokenKey);
+    console.log('Current token:', token);
+    return token;
   }
 
   private setToken(token: string): void {
+    console.log('Setting token:', token);
     localStorage.setItem(this.tokenKey, token);
   }
 

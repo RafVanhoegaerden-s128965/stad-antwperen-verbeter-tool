@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
+import { AuthService } from '../services/auth.service';
 
 @Injectable({
   providedIn: 'root',
@@ -8,7 +9,18 @@ import { firstValueFrom } from 'rxjs';
 export class ApiService {
   private baseUrl = 'https://antwerpen.localhost/api';
 
-  constructor(private http: HttpClient) { }
+  constructor(
+    private http: HttpClient,
+    private authService: AuthService
+  ) {}
+
+  private getHeaders(): HttpHeaders {
+    const token = this.authService.getToken();
+    return new HttpHeaders({
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    });
+  }
 
   private getFullUrl(endpoint: string): string {
     return `${this.baseUrl}${endpoint}`;
@@ -18,10 +30,14 @@ export class ApiService {
   async postRawText(rawText: string, textType: string): Promise<any> {
     try {
       const response = await firstValueFrom(
-        this.http.post(this.getFullUrl('/raw_text'), {
-          text: rawText,
-          text_type: textType.toLowerCase()
-        })
+        this.http.post(
+          this.getFullUrl('/raw_text'),
+          {
+            text: rawText,
+            text_type: textType.toLowerCase()
+          },
+          { headers: this.getHeaders() }
+        )
       );
       return response;
     } catch (error) {
@@ -34,7 +50,11 @@ export class ApiService {
   async postSuggestion(rawTextId: string): Promise<any> {
     try {
       const response = await firstValueFrom(
-        this.http.post(this.getFullUrl(`/suggestions/${rawTextId}`), {})
+        this.http.post(
+          this.getFullUrl(`/suggestions/${rawTextId}`),
+          {},
+          { headers: this.getHeaders() }
+        )
       );
       return response;
     } catch (error) {
