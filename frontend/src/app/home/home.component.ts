@@ -2,6 +2,8 @@ import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { ApiService } from '../api/api.service';
 import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
+import { AuthService } from '../services/auth.service';
 
 interface Correction {
   incorrect_part: string;
@@ -31,7 +33,9 @@ export class HomeComponent {
 
   constructor(
     private formBuilder: FormBuilder,
-    private apiService: ApiService
+    private apiService: ApiService,
+    private authService: AuthService,
+    private router: Router
   ) {
     this.textForm = this.formBuilder.group({
       originalText: [''],
@@ -210,5 +214,10 @@ export class HomeComponent {
     } catch (error) {
       console.error('Error during finalization:', error);
     }
+  }
+
+  onLogout(): void {
+    this.authService.logout();
+    this.router.navigate(['/login']);
   }
 }

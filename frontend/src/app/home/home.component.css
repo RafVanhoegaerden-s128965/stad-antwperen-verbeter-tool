@@ -270,3 +270,19 @@
     flex: 1;
   }
 }
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.logout {
+  background-color: #dc3545;
+  color: white;
+}
+
+.logout:hover {
+  background-color: #c82333;
+}

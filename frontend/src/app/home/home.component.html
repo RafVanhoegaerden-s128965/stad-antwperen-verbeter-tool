@@ -1,28 +1,24 @@
 <div class="container">
-  <h2 class="title">Slimme Schrijftool</h2>
+  <div class="header">
+    <h2 class="title">Slimme Schrijftool</h2>
+    <button class="button logout" (click)="onLogout()">Uitloggen</button>
+  </div>
 
   <form [formGroup]="textForm" class="form">
     <div class="text-fields">
       <!-- Original text area -->
       <div class="field">
         <label class="label">Originele tekst</label>
-        <textarea
-          formControlName="originalText"
-          placeholder="Voer hier je originele tekst in..."
-          class="text-area"
-        ></textarea>
+        <textarea formControlName="originalText" placeholder="Voer hier je originele tekst in..."
+          class="text-area"></textarea>
       </div>
 
       <!-- Generated text area -->
       <div class="field">
         <label class="label">Gegenereerde tekst</label>
         <div class="generated-text-container">
-          <textarea
-            formControlName="generatedText"
-            placeholder="Hier verschijnt de gegenereerde tekst..."
-            class="text-area"
-            [class.loading]="isLoading"
-          ></textarea>
+          <textarea formControlName="generatedText" placeholder="Hier verschijnt de gegenereerde tekst..."
+            class="text-area" [class.loading]="isLoading"></textarea>
           <div *ngIf="isLoading" class="loader-container">
             <div class="loader"></div>
             <span>Bezig met genereren...</span>
@@ -62,11 +58,7 @@
     <div class="controls">
       <div class="select-container">
         <label class="label">Medium type</label>
-        <select
-          formControlName="mediumType"
-          class="select"
-          id="mediumTypeSelect"
-        >
+        <select formControlName="mediumType" class="select" id="mediumTypeSelect">
           <option value="" disabled style="color: #d0d0d0">
             Selecteer een medium
           </option>
@@ -75,11 +67,7 @@
       </div>
 
       <div class="buttons">
-        <button
-          type="button"
-          class="button generalize"
-          (click)="onGeneralize()"
-        >
+        <button type="button" class="button generalize" (click)="onGeneralize()">
           Generaliseer
         </button>
         <button type="button" class="button finalize" (click)="onFinalize()">
