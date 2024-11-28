@@ -127,60 +127,24 @@ def create_final_text(
         if not es.exists(index="suggestions", id=request.suggestion_id):
             raise HTTPException(status_code=404, detail="Suggestion not found")
 
-        # Check if a document with this text already exists
-        search_result = es.search(
-            index="final_texts",
-            body={
-                "query": {
-                    "bool": {
-                        "must": [
-                            {"match": {"text": request.text}},
-                            {"term": {"raw_text_id": request.raw_text_id}},
-                            {"term": {"suggestion_id": request.suggestion_id}}
-                        ]
-                    }
-                }
-            }
-        )
-
         final_text_data = {
             "text": request.text,
             "raw_text_id": request.raw_text_id,
             "suggestion_id": request.suggestion_id,
             "timestamp": datetime.datetime.now().isoformat()
         }
+    
+        result = es.index(
+            index="final_texts",
+            document=final_text_data,
+            refresh=True
+        )
 
-        # If we found an exact match
-        if search_result["hits"]["total"]["value"] > 0:
-            existing_doc = search_result["hits"]["hits"][0]
-            existing_id = existing_doc["_id"]
-            
-            # Update the existing document
-            es.update(
-                index="final_texts",
-                id=existing_id,
-                doc=final_text_data,
-                refresh=True
-            )
-            
-            return {
-                "message": "Final text updated successfully (duplicate found)",
-                "id": existing_id,
-                "data": final_text_data
-            }
-        else:
-            # No duplicate found, create new document
-            result = es.index(
-                index="final_texts",
-                document=final_text_data,
-                refresh=True
-            )
-
-            return {
-                "message": "Final text created successfully",
-                "id": result["_id"],
-                "data": final_text_data
-            }
+        return {
+            "message": "Final text created successfully",
+            "id": result["_id"],
+            "data": final_text_data
+        }
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to store final text: {str(e)}")
