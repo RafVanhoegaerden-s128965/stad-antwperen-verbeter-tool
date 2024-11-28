@@ -1,13 +1,17 @@
 from fastapi import APIRouter, HTTPException, Depends
 from elasticsearch import Elasticsearch
 from dependencies.elasticsearch import get_es_client
+from dependencies.auth import get_current_user
 from models.schemas import FinalTextBody
 import datetime
 
 router = APIRouter()
 
 @router.get("/final_texts")
-def get_all_final_texts(es: Elasticsearch = Depends(get_es_client)):
+def get_all_final_texts(
+    current_user: str = Depends(get_current_user),
+    es: Elasticsearch = Depends(get_es_client)
+):
     try:
         result = es.search(
             index="final_texts",
@@ -33,6 +37,7 @@ def get_all_final_texts(es: Elasticsearch = Depends(get_es_client)):
 @router.get("/final_text/{final_text_id}")
 def get_final_text_by_id(
     final_text_id: str,
+    current_user: str = Depends(get_current_user),
     es: Elasticsearch = Depends(get_es_client)
 ):
     try:
@@ -49,6 +54,7 @@ def get_final_text_by_id(
 @router.get("/final_texts/by-raw-text/{raw_text_id}")
 def get_final_texts_by_raw_text_id(
     raw_text_id: str,
+    current_user: str = Depends(get_current_user),
     es: Elasticsearch = Depends(get_es_client)
 ):
     try:
@@ -79,6 +85,7 @@ def get_final_texts_by_raw_text_id(
 @router.get("/final_texts/by-suggestion/{suggestion_id}")
 def get_final_texts_by_suggestion_id(
     suggestion_id: str,
+    current_user: str = Depends(get_current_user),
     es: Elasticsearch = Depends(get_es_client)
 ):
     try:
@@ -109,6 +116,7 @@ def get_final_texts_by_suggestion_id(
 @router.post("/final_text")
 def create_final_text(
     request: FinalTextBody,
+    current_user: str = Depends(get_current_user),
     es: Elasticsearch = Depends(get_es_client)
 ):
     try:

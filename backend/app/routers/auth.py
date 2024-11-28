@@ -9,11 +9,21 @@ import traceback
 router = APIRouter()
 logger = logging.getLogger(__name__)
 
-# Hardcoded user for testing
-DUMMY_USER = {
-    "username": "admin",
-    "password": "$2b$12$vMFjvm6A5efLDZ7IPxI.AOhEiWg7qz1.SKdazDinlK6.i6.QXr0nq"  # New hash for 'password'
-}
+def get_user_credentials():
+    username = os.getenv("AUTH_USERNAME")
+    password_hash = os.getenv("AUTH_PASSWORD_HASH")
+    
+    if not username or not password_hash:
+        logger.error("Missing authentication credentials in environment variables")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Authentication configuration error"
+        )
+    
+    return {
+        "username": username,
+        "password": password_hash
+    }
 
 @router.post("/token")
 async def login(form_data: OAuth2PasswordRequestForm = Depends()):
@@ -21,8 +31,11 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends()):
         logger.info(f"Login attempt for user: {form_data.username}")
         logger.info(f"Received password length: {len(form_data.password)}")
         
+        # Get credentials from environment
+        user_credentials = get_user_credentials()
+        
         # Verify username
-        if form_data.username != DUMMY_USER["username"]:
+        if form_data.username != user_credentials["username"]:
             logger.error("Username mismatch")
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
@@ -32,7 +45,7 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends()):
         
         # Verify password
         logger.info("Username matched, attempting password verification")
-        verification_result = verify_password(form_data.password, DUMMY_USER["password"])
+        verification_result = verify_password(form_data.password, user_credentials["password"])
         logger.info(f"Password verification result: {verification_result}")
         
         if not verification_result:
