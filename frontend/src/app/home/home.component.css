@@ -74,6 +74,7 @@
   justify-content: space-between;
   align-items: flex-end;
   gap: 1rem;
+  margin-bottom: 3rem;
 }
 
 .select-container {
@@ -122,6 +123,133 @@
 
 .finalize:hover {
   background-color: #0056b3;
+}
+
+/* Suggestions styles */
+.suggestions-area {
+  margin-top: 1rem;
+  display: none;
+}
+
+.suggestions-area.visible {
+  display: block;
+}
+
+.suggestions-container {
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  max-height: 230px;
+  overflow-y: auto;
+  padding: 1rem;
+  background-color: #f8f9fa;
+}
+
+.suggestion-item {
+  background: white;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.suggestion-item:last-child {
+  margin-bottom: 0;
+}
+
+.suggestion-content {
+  flex: 1;
+}
+
+.original-text,
+.corrected-text {
+  margin-bottom: 0.5rem;
+}
+
+.original-text strong,
+.corrected-text strong {
+  color: #161925;
+  display: block;
+  margin-bottom: 0.25rem;
+}
+
+.explanation {
+  color: #666;
+  font-style: italic;
+  margin-top: 0.5rem;
+}
+
+.suggestion-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.button.accept {
+  background-color: #007bff;
+  color: white;
+}
+
+.button.accept:hover {
+  background-color: #0056b3;
+}
+
+.button.reject {
+  background-color: #e0e0e0;
+  color: #333;
+}
+
+.button.reject:hover {
+  background-color: #d0d0d0;
+}
+
+/* Loader styles */
+.generated-text-container {
+  position: relative;
+  width: 100%;
+  flex: 1;
+  display: flex;
+}
+
+.generated-text-container .text-area {
+  width: 100%;
+}
+
+.text-area.loading {
+  opacity: 0.6;
+}
+
+.loader-container {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.loader-container span {
+  color: #161925;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.loader {
+  width: 40px;
+  height: 40px;
+  border: 3px solid #f3f3f3;
+  border-top: 3px solid #007bff;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
 
 @media (max-width: 768px) {
