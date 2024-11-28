@@ -3,6 +3,12 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 import { AuthService } from '../services/auth.service';
 
+interface RawTextResponse {
+  message: string;
+  id: string;
+  data: any;
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -27,10 +33,10 @@ export class ApiService {
   }
 
   // POST raw-text
-  async postRawText(rawText: string, textType: string): Promise<any> {
+  async postRawText(rawText: string, textType: string): Promise<string> {
     try {
       const response = await firstValueFrom(
-        this.http.post(
+        this.http.post<RawTextResponse>(
           this.getFullUrl('/raw_text'),
           {
             text: rawText,
@@ -39,7 +45,8 @@ export class ApiService {
           { headers: this.getHeaders() }
         )
       );
-      return response;
+      console.log('Raw text response:', response);
+      return response.id;
     } catch (error) {
       console.error('Error posting raw text:', error);
       throw error;
@@ -67,9 +74,12 @@ export class ApiService {
   async getSuggestion(suggestionId: string): Promise<any> {
     try {
       const response = await firstValueFrom(
-        this.http.get(this.getFullUrl(`/suggestion/${suggestionId}`))
+        this.http.get(
+          this.getFullUrl(`/suggestion/${suggestionId}`),
+          { headers: this.getHeaders() }
+        )
       );
-      console.log('Raw getSuggestions response:', response);  // Debug log
+      console.log('Raw getSuggestions response:', response);
       return response;
     } catch (error) {
       console.error('Error getting suggestions:', error);
@@ -81,10 +91,14 @@ export class ApiService {
   async updateRawText(rawTextId: string, rawText: string, textType: string): Promise<any> {
     try {
       const response = await firstValueFrom(
-        this.http.put(this.getFullUrl(`/raw_text/${rawTextId}`), {
-          text: rawText,
-          text_type: textType.toLowerCase()
-        })
+        this.http.put(
+          this.getFullUrl(`/raw_text/${rawTextId}`),
+          {
+            text: rawText,
+            text_type: textType.toLowerCase()
+          },
+          { headers: this.getHeaders() }
+        )
       );
       return response;
     } catch (error) {
@@ -97,7 +111,11 @@ export class ApiService {
   async updateSuggestion(suggestionId: string): Promise<any> {
     try {
       const response = await firstValueFrom(
-        this.http.put(this.getFullUrl(`/suggestions/${suggestionId}`), {})
+        this.http.put(
+          this.getFullUrl(`/suggestions/${suggestionId}`),
+          {},
+          { headers: this.getHeaders() }
+        )
       );
       return response;
     } catch (error) {
@@ -110,11 +128,15 @@ export class ApiService {
   async postFinalText(text: string, rawTextId: string, suggestionId: string): Promise<any> {
     try {
       const response = await firstValueFrom(
-        this.http.post(this.getFullUrl('/final_text'), {
-          text: text,
-          raw_text_id: rawTextId,
-          suggestion_id: suggestionId
-        })
+        this.http.post(
+          this.getFullUrl('/final_text'),
+          {
+            text: text,
+            raw_text_id: rawTextId,
+            suggestion_id: suggestionId
+          },
+          { headers: this.getHeaders() }
+        )
       );
       return response;
     } catch (error) {

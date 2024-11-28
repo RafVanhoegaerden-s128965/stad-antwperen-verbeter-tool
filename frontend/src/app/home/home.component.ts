@@ -80,11 +80,17 @@ export class HomeComponent {
           originalText,
           mediumType
         );
+        console.log('Raw text response:', rawTextId);
         this.currentRawTextId = rawTextId;
 
+        if (!this.currentRawTextId) {
+          throw new Error('Failed to get raw text ID');
+        }
+
         const suggestionResponse = await this.apiService.postSuggestion(
-          rawTextId
+          this.currentRawTextId
         );
+        console.log('Suggestion response:', suggestionResponse); // Debug log
         this.currentSuggestionId = suggestionResponse?.id;
 
         const suggestions = await this.apiService.getSuggestion(
