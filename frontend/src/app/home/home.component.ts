@@ -158,6 +158,33 @@ export class HomeComponent {
     // Remove the suggestion and update the display
     this.suggestions.splice(index, 1);
 
+    // Shift other suggestions and remove overlaps
+    const correctedPartLength = suggestion.corrected_part.length;
+    const originalPartLength = suggestion.incorrect_part.length;
+    const offsetDifference = correctedPartLength - originalPartLength;
+    this.suggestions = this.suggestions.filter((currentSuggestion) => {
+      const currentStart = currentSuggestion.info?.startPos ?? 0;
+      const currentEnd = currentSuggestion.info?.endPos ?? 0;
+  
+      const isOverlapping =
+        (currentStart >= startPos && currentStart < endPos) ||
+        (currentEnd > startPos && currentEnd <= endPos) ||
+        (currentStart <= startPos && currentEnd >= endPos);
+  
+      if (isOverlapping) {
+        // Remove overlapping suggestion
+        return false;
+      }
+  
+      // Shift position of everything else
+      if (currentStart > startPos) {
+        currentSuggestion.info.startPos += offsetDifference;
+        currentSuggestion.info.endPos += offsetDifference;
+      }
+  
+      return true;
+    });
+
     this.textForm.patchValue({
       generatedText: newText,
     });
