@@ -26,9 +26,9 @@ def main():
 
         # Check API for a response code
         if response.status_code == 200:
-            print(f"[{index + 1} out of {len(urls)} successfully completed]")
+            print(f"[{index + 1} out of {len(urls)} successfully sent to database]")
         else:
-            print(f"[{index + 1} out of {len(urls)} failed, status code: {response.status_code}]")
+            print(f"[{index + 1} out of {len(urls)} failed to send to database, status code: {response.status_code}]")
     close_driver()
 
 
