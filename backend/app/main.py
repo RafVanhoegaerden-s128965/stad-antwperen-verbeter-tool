@@ -11,12 +11,19 @@ from routers import (
     suggestions,
     final_texts,
     elastic,
-    scraper
+    scraper,
+    auth
 )
 
 # Setup logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
+# Log environment variables at startup
+logger.info("Checking environment variables...")
+logger.info(f"JWT_SECRET_KEY exists: {bool(os.getenv('JWT_SECRET_KEY'))}")
+logger.info(f"AUTH_USERNAME exists: {bool(os.getenv('AUTH_USERNAME'))}")
+logger.info(f"AUTH_PASSWORD_HASH exists: {bool(os.getenv('AUTH_PASSWORD_HASH'))}")
 
 # Initialize FastAPI app
 app = FastAPI(
@@ -73,6 +80,12 @@ app.include_router(
     scraper.router,
     prefix="/api",
     tags=["Scraper"]
+)
+
+app.include_router(
+    auth.router,
+    prefix="/api/auth",
+    tags=["Authentication"]
 )
 
 # Health check endpoint

@@ -46,7 +46,9 @@ services:
         labels:
             - traefik.enable=true
             - traefik.http.routers.backend.rule=Host(`$APP_URL`) && PathPrefix(`/api`)
-            - traefik.http.services.backend-service.loadbalancer.server.port=8000
+            - traefik.http.routers.backend.entrypoints=websecure
+            - traefik.http.routers.backend.tls=true
+            - traefik.http.services.backend.loadbalancer.server.port=8000
     elasticsearch:
         image: docker.elastic.co/elasticsearch/elasticsearch:8.11.1
         container_name: stad-antwerpen-elasticsearch
@@ -77,8 +79,10 @@ services:
                 condition: service_healthy
         labels:
             - traefik.enable=true
-            - traefik.http.routers.backend.rule=Host(`$APP_URL`) && PathPrefix(`/scraper`)
-            - traefik.http.services.backend-service.loadbalancer.server.port=3000
+            - traefik.http.routers.scraper.rule=Host(`$APP_URL`) && PathPrefix(`/scraper`)
+            - traefik.http.routers.scraper.entrypoints=websecure
+            - traefik.http.routers.scraper.tls=true
+            - traefik.http.services.scraper.loadbalancer.server.port=3000
 volumes:
     letsencrypt-volume:
     es-data:

@@ -1,12 +1,14 @@
 from fastapi import APIRouter, HTTPException, Depends
 from elasticsearch import Elasticsearch
 from dependencies.elasticsearch import get_es_client
+from dependencies.auth import get_current_user
 
 router = APIRouter()
 
 @router.delete("/elastic/clear/{index_name}")
 def clear_elastic_index(
     index_name: str,
+    current_user: str = Depends(get_current_user),
     es: Elasticsearch = Depends(get_es_client)
 ):
     try:
@@ -37,6 +39,7 @@ def clear_elastic_index(
 
 @router.delete("/elastic/clear_all")
 def clear_all_elastic_indices(
+    current_user: str = Depends(get_current_user),
     es: Elasticsearch = Depends(get_es_client)
 ):
     try:

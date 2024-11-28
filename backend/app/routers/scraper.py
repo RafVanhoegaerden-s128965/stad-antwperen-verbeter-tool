@@ -1,11 +1,15 @@
 from fastapi import APIRouter, HTTPException, Depends
 from elasticsearch import Elasticsearch
 from dependencies.elasticsearch import get_es_client
+from dependencies.auth import get_current_user
 
 router = APIRouter()
 
 @router.get("/scraper/training_data")
-def get_training_data(es: Elasticsearch = Depends(get_es_client)):
+def get_training_data(
+    current_user: str = Depends(get_current_user),
+    es: Elasticsearch = Depends(get_es_client)
+):
     try:
         result = es.search(index="scraped_data", body={"query": {"match_all": {}}, "size": 10000})
         items = [{"_id": hit["_id"], "_source": hit["_source"]} for hit in result["hits"]["hits"]]
@@ -14,7 +18,11 @@ def get_training_data(es: Elasticsearch = Depends(get_es_client)):
         raise HTTPException(status_code=500, detail=f"Failed to retrieve scraped data: {str(e)}")
 
 @router.post("/elastic/scraper_data")
-async def post_scraper_data(data: dict, es: Elasticsearch = Depends(get_es_client)):
+async def post_scraper_data(
+    data: dict,
+    current_user: str = Depends(get_current_user),
+    es: Elasticsearch = Depends(get_es_client)
+):
     try:
         result = es.index(index="scraped_data", document=data)
         

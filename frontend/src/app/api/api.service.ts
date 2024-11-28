@@ -1,35 +1,147 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { firstValueFrom } from 'rxjs';
+import { AuthService } from '../services/auth.service';
+
+interface RawTextResponse {
+  message: string;
+  id: string;
+  data: any;
+}
 
 @Injectable({
   providedIn: 'root',
 })
 export class ApiService {
-  public baseUrl = 'http://127.0.0.1:8000/api';
+  private baseUrl = 'https://antwerpen.localhost/api';
 
-  constructor(private http: HttpClient) {}
+  constructor(
+    private http: HttpClient,
+    private authService: AuthService
+  ) {}
 
-  // POST raw-text
-  postRawText(input_text: string, input_type: string): Observable<any> {
-    return this.http.post(`${this.baseUrl}/llm/raw_text`, {
-      input_text,
-      input_type,
+  private getHeaders(): HttpHeaders {
+    const token = this.authService.getToken();
+    return new HttpHeaders({
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
     });
   }
 
-  // Verkrijg lijst van items (GET /api/items)
-  // getItems(): Observable<any> {
-  //   return this.http.get<any>(`${this.apiUrl}/items`);
-  // }
+  private getFullUrl(endpoint: string): string {
+    return `${this.baseUrl}${endpoint}`;
+  }
 
-  // Verkrijg een specifiek item op basis van item_id (GET /api/items/{item_id})
-  // getItemById(itemId: string): Observable<any> {
-  //   return this.http.get<any>(`${this.apiUrl}/items/${itemId}`);
-  // }
+  // POST raw-text
+  async postRawText(rawText: string, textType: string): Promise<string> {
+    try {
+      const response = await firstValueFrom(
+        this.http.post<RawTextResponse>(
+          this.getFullUrl('/raw_text'),
+          {
+            text: rawText,
+            text_type: textType.toLowerCase()
+          },
+          { headers: this.getHeaders() }
+        )
+      );
+      console.log('Raw text response:', response);
+      return response.id;
+    } catch (error) {
+      console.error('Error posting raw text:', error);
+      throw error;
+    }
+  }
 
-  // Maak een nieuw item aan (POST /api/items/{item_id})
-  // createItem(itemId: string, itemData: any): Observable<any> {
-  //   return this.http.post<any>(`${this.apiUrl}/items/${itemId}`, itemData);
-  // }
+  // POST suggestion
+  async postSuggestion(rawTextId: string): Promise<any> {
+    try {
+      const response = await firstValueFrom(
+        this.http.post(
+          this.getFullUrl(`/suggestions/${rawTextId}`),
+          {},
+          { headers: this.getHeaders() }
+        )
+      );
+      return response;
+    } catch (error) {
+      console.error('Error posting suggestions:', error);
+      throw error;
+    }
+  }
+
+  // GET suggestion
+  async getSuggestion(suggestionId: string): Promise<any> {
+    try {
+      const response = await firstValueFrom(
+        this.http.get(
+          this.getFullUrl(`/suggestion/${suggestionId}`),
+          { headers: this.getHeaders() }
+        )
+      );
+      console.log('Raw getSuggestions response:', response);
+      return response;
+    } catch (error) {
+      console.error('Error getting suggestions:', error);
+      throw error;
+    }
+  }
+
+  // UPDATE raw-text
+  async updateRawText(rawTextId: string, rawText: string, textType: string): Promise<any> {
+    try {
+      const response = await firstValueFrom(
+        this.http.put(
+          this.getFullUrl(`/raw_text/${rawTextId}`),
+          {
+            text: rawText,
+            text_type: textType.toLowerCase()
+          },
+          { headers: this.getHeaders() }
+        )
+      );
+      return response;
+    } catch (error) {
+      console.error('Error updating raw text:', error);
+      throw error;
+    }
+  }
+
+  // UPDATE suggestion
+  async updateSuggestion(suggestionId: string): Promise<any> {
+    try {
+      const response = await firstValueFrom(
+        this.http.put(
+          this.getFullUrl(`/suggestions/${suggestionId}`),
+          {},
+          { headers: this.getHeaders() }
+        )
+      );
+      return response;
+    } catch (error) {
+      console.error('Error updating suggestions:', error);
+      throw error;
+    }
+  }
+
+  // POST final-text
+  async postFinalText(text: string, rawTextId: string, suggestionId: string): Promise<any> {
+    try {
+      const response = await firstValueFrom(
+        this.http.post(
+          this.getFullUrl('/final_text'),
+          {
+            text: text,
+            raw_text_id: rawTextId,
+            suggestion_id: suggestionId
+          },
+          { headers: this.getHeaders() }
+        )
+      );
+      return response;
+    } catch (error) {
+      console.error('Error posting final text:', error);
+      throw error;
+    }
+  }
 }

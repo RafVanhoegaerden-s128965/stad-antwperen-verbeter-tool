@@ -2,6 +2,7 @@ from fastapi import APIRouter, HTTPException, Depends
 from fastapi.params import Query
 from elasticsearch import Elasticsearch, NotFoundError
 from dependencies.elasticsearch import get_es_client
+from dependencies.auth import get_current_user
 import datetime
 import json
 import re
@@ -11,13 +12,17 @@ import os
 router = APIRouter()
 
 # LLM configuration
-COHERE_API_KEY = os.getenv('COHERE_API_KEY')
+COHERE_API_KEY = "64pQp0tPXshskmyGbfcWa1TYnT8LJrT5ZztohjEN"
+#COHERE_API_KEY = os.getenv('COHERE_API_KEY')
 # OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
 cohere_model = CohereLLM(api_key=COHERE_API_KEY)
 # openai_model = OpenAILLM(api_key=OPENAI_API_KEY)
 
 @router.get("/suggestions")
-def get_all_suggestions(es: Elasticsearch = Depends(get_es_client)):
+def get_all_suggestions(
+    current_user: str = Depends(get_current_user),
+    es: Elasticsearch = Depends(get_es_client)
+):
     try:
         result = es.search(
             index="suggestions",
@@ -40,6 +45,7 @@ def get_all_suggestions(es: Elasticsearch = Depends(get_es_client)):
 @router.get("/suggestion/{suggestion_id}")
 def get_suggestion_by_id(
     suggestion_id: str,
+    current_user: str = Depends(get_current_user),
     es: Elasticsearch = Depends(get_es_client)
 ):
     try:
@@ -56,6 +62,7 @@ def get_suggestion_by_id(
 @router.get("/suggestions/by-raw-text/{raw_text_id}")
 def get_suggestions_by_raw_text_id(
     raw_text_id: str,
+    current_user: str = Depends(get_current_user),
     es: Elasticsearch = Depends(get_es_client)
 ):
     try:
@@ -86,6 +93,7 @@ def get_suggestions_by_raw_text_id(
 @router.post("/suggestions/{raw_text_id}")
 def create_suggestions(
     raw_text_id: str,
+    current_user: str = Depends(get_current_user),
     model: str = "cohere",
     temperature: float = Query(0.65, ge=0, le=1),
     frequency_penalty: float = Query(0.0, ge=0, le=1),
@@ -141,6 +149,7 @@ def create_suggestions(
 @router.put("/suggestions/{suggestion_id}")
 def update_suggestion(
     suggestion_id: str,
+    current_user: str = Depends(get_current_user),
     model: str = "cohere",
     temperature: float = Query(0.65, ge=0, le=1),
     frequency_penalty: float = Query(0.0, ge=0, le=1),
