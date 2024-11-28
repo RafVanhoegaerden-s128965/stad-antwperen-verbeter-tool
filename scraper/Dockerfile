@@ -5,8 +5,9 @@ COPY . .
 
 # Install required packages
 RUN apt-get update && apt-get install -y \
-    chromium-driver \
-    chromium \
+    chromium-driver=130.0.6723.91-1~deb12u1 \
+    chromium-common=130.0.6723.91-1~deb12u1 \
+    chromium=130.0.6723.91-1~deb12u1 \
     && rm -rf /var/lib/apt/lists/*
 
 # Install Python dependencies
