@@ -132,7 +132,12 @@ def create_suggestions(
             "timestamp": datetime.datetime.now().isoformat()
         }
         
-        result = es.index(index="suggestions", document=suggestions_data, refresh=True)
+        # Always create new suggestions
+        result = es.index(
+            index="suggestions",
+            document=suggestions_data,
+            refresh=True
+        )
         
         return {
             "message": "Suggestions created successfully",
