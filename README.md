@@ -37,6 +37,11 @@ To run the backend locally with uvicorn:
 
 ## Production
 
+Connect to server:
+
+-   SSH Command: `ssh uitdovend@78.46.102.226`
+-   Password: `cWshWjB5pS4J9p`
+
 To deploy the application on a server:
 `docker compose up --build -d`
 
@@ -44,3 +49,10 @@ The application should now be running in production mode
 
 To stop the application on the server:
 `docker compose down`
+
+Server domain:
+
+-   `antwerpen.redactie`
+-   `antwerpen.redactie/api`
+-   `antwerpen.redactie/es`
+-   `antwerpen.redactie/scraper`

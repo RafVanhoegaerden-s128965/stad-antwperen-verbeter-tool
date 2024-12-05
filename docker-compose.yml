@@ -58,7 +58,7 @@ services:
             - elasticsearch
         labels:
             - traefik.enable=true
-            - traefik.http.routers.backend.rule=Host(`$APP_URL`) && PathPrefix(`/scraper`)
+            - traefik.http.routers.backend.rule=Host(`$HOSTNAME`) && PathPrefix(`/scraper`)
             - traefik.http.services.backend-service.loadbalancer.server.port=3000
 
 volumes:
