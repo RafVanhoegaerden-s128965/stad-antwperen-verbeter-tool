@@ -120,6 +120,7 @@ def create_final_text(
     es: Elasticsearch = Depends(get_es_client)
 ):
     try:
+        # First check if raw_text and suggestion exist
         if not es.exists(index="raw_texts", id=request.raw_text_id):
             raise HTTPException(status_code=404, detail="Raw text not found")
             
@@ -132,7 +133,7 @@ def create_final_text(
             "suggestion_id": request.suggestion_id,
             "timestamp": datetime.datetime.now().isoformat()
         }
-
+    
         result = es.index(
             index="final_texts",
             document=final_text_data,

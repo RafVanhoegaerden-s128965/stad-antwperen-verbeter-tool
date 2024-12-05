@@ -67,8 +67,45 @@ def create_raw_text(
     }
 
     try:
-        es.index(index="raw_texts", id=hashed_id, document=storage_data, refresh=True)
-        return {"message": "Raw text created successfully", "id": hashed_id, "data": storage_data}
+        # Check if a document with this text already exists
+        search_result = es.search(
+            index="raw_texts",
+            body={
+                "query": {
+                    "match": {
+                        "text": text
+                    }
+                }
+            }
+        )
+
+        # If we found an exact match
+        if search_result["hits"]["total"]["value"] > 0:
+            existing_doc = search_result["hits"]["hits"][0]
+            existing_id = existing_doc["_id"]
+            
+            # Update the existing document
+            es.update(
+                index="raw_texts",
+                id=existing_id,
+                doc=storage_data,
+                refresh=True
+            )
+            
+            return {
+                "message": "Raw text updated successfully (duplicate found)",
+                "id": existing_id,
+                "data": storage_data
+            }
+        else:
+            # No duplicate found, create new document
+            es.index(index="raw_texts", id=hashed_id, document=storage_data, refresh=True)
+            return {
+                "message": "Raw text created successfully",
+                "id": hashed_id,
+                "data": storage_data
+            }
+            
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to store text: {str(e)}")
 

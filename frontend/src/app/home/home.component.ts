@@ -141,9 +141,6 @@ export class HomeComponent {
 
   acceptSuggestion(index: number) {
     const suggestion = this.suggestions[index];
-    const oldLength = suggestion.incorrect_part.length;
-    const newLength = suggestion.corrected_part.length;
-    const lengthDifference = newLength - oldLength;
 
     // Replace text at the correct position
     const startPos = suggestion.info?.startPos ?? 0;
@@ -158,11 +155,35 @@ export class HomeComponent {
     // Update original response text for future reference
     this.originalResponseText = newText;
 
-    // Remove the current suggestion
+    // Remove the suggestion and update the display
     this.suggestions.splice(index, 1);
 
-    // Update the positions of remaining suggestions
-    this.updateSuggestionPositions(startPos, lengthDifference);
+    // Shift other suggestions and remove overlaps
+    const correctedPartLength = suggestion.corrected_part.length;
+    const originalPartLength = suggestion.incorrect_part.length;
+    const offsetDifference = correctedPartLength - originalPartLength;
+    this.suggestions = this.suggestions.filter((currentSuggestion) => {
+      const currentStart = currentSuggestion.info?.startPos ?? 0;
+      const currentEnd = currentSuggestion.info?.endPos ?? 0;
+  
+      const isOverlapping =
+        (currentStart >= startPos && currentStart < endPos) ||
+        (currentEnd > startPos && currentEnd <= endPos) ||
+        (currentStart <= startPos && currentEnd >= endPos);
+  
+      if (isOverlapping) {
+        // Remove overlapping suggestion
+        return false;
+      }
+  
+      // Shift position of everything else
+      if (currentStart > startPos) {
+        currentSuggestion.info.startPos += offsetDifference;
+        currentSuggestion.info.endPos += offsetDifference;
+      }
+  
+      return true;
+    });
 
     this.textForm.patchValue({
       generatedText: newText,
@@ -172,22 +193,25 @@ export class HomeComponent {
   rejectSuggestion(index: number) {
     const suggestion = this.suggestions[index];
 
-    // No need to adjust positions as we're keeping the original text
-    // Just remove the suggestion
-    this.suggestions.splice(index, 1);
-  }
+    // Keep the original text at this position
+    const startPos = suggestion.info?.startPos ?? 0;
+    const endPos = suggestion.info?.endPos ?? 0;
 
-  private updateSuggestionPositions(
-    changedPosition: number,
-    lengthDifference: number
-  ) {
-    for (let suggestion of this.suggestions) {
-      // Only update positions that come after the changed text
-      if (suggestion.info.startPos > changedPosition) {
-        suggestion.info.startPos += lengthDifference;
-        suggestion.info.endPos += lengthDifference;
-      }
-    }
+    const currentText = this.textForm.get('generatedText')?.value;
+    const newText =
+      currentText.substring(0, startPos) +
+      suggestion.incorrect_part +
+      currentText.substring(endPos);
+
+    // Update original response text for future reference
+    this.originalResponseText = newText;
+
+    // Remove the suggestion
+    this.suggestions.splice(index, 1);
+
+    this.textForm.patchValue({
+      generatedText: newText,
+    });
   }
 
   async onFinalize() {

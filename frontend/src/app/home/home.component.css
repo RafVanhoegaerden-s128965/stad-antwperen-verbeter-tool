@@ -247,9 +247,40 @@
   animation: spin 1s linear infinite;
 }
 
+/* Highlight styles */
+.highlighted-text {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 0.75rem;
+  pointer-events: none;
+  white-space: pre-wrap;
+  overflow: auto;
+  font-family: "Hind", sans-serif;
+  font-size: 1rem;
+}
+
+.text-area {
+  background: transparent;
+  color: black;
+  caret-color: black;
+}
+
+.suggestion-highlight {
+  background-color: rgb(255, 243, 205);
+  color: rgb(133, 100, 4);
+  border-radius: 2px;
+}
+
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 @media (max-width: 768px) {

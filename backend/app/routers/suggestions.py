@@ -12,8 +12,7 @@ import os
 router = APIRouter()
 
 # LLM configuration
-COHERE_API_KEY = "64pQp0tPXshskmyGbfcWa1TYnT8LJrT5ZztohjEN"
-#COHERE_API_KEY = os.getenv('COHERE_API_KEY')
+COHERE_API_KEY = os.getenv('COHERE_API_KEY')
 # OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
 cohere_model = CohereLLM(api_key=COHERE_API_KEY)
 # openai_model = OpenAILLM(api_key=OPENAI_API_KEY)
@@ -133,7 +132,12 @@ def create_suggestions(
             "timestamp": datetime.datetime.now().isoformat()
         }
         
-        result = es.index(index="suggestions", document=suggestions_data, refresh=True)
+        # Always create new suggestions
+        result = es.index(
+            index="suggestions",
+            document=suggestions_data,
+            refresh=True
+        )
         
         return {
             "message": "Suggestions created successfully",
