@@ -5,27 +5,28 @@ import { authGuard } from './guards/auth.guard';
 import { LogoutComponent } from './logout/logout.component';
 
 export const routes: Routes = [
-  { 
-    path: 'home', 
+  {
+    path: 'home',
     component: HomeComponent,
-    canActivate: [authGuard]
+    canActivate: [authGuard],
   },
-  { 
-    path: 'login', 
-    component: LoginComponent 
+  {
+    path: 'login',
+    component: LoginComponent,
   },
-  { 
-    path: '', 
-    redirectTo: 'home', 
-    pathMatch: 'full' 
-  },
-  { 
-    path: 'logout', 
+  {
+    path: 'logout',
     component: LogoutComponent,
-    canActivate: [authGuard]
+    canActivate: [authGuard],
   },
-  { 
-    path: '**', 
-    redirectTo: 'home' 
-  }
+  {
+    path: '',
+    redirectTo: 'home',
+    pathMatch: 'full',
+  },
+  {
+    path: '**',
+    redirectTo: 'home',
+    pathMatch: 'full',
+  },
 ];

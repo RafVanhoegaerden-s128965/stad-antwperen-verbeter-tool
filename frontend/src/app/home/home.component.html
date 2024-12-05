@@ -4,93 +4,110 @@
     <button class="button logout" (click)="onLogout()">Uitloggen</button>
   </div>
 
-  <form [formGroup]="textForm" class="form">
-    <div class="text-fields">
-      <!-- Original text area -->
-      <div class="field">
-        <label class="label">Originele tekst</label>
-        <textarea formControlName="originalText" placeholder="Voer hier je originele tekst in..."
-          class="text-area"></textarea>
-      </div>
-
-      <!-- Generated text area -->
-      <div class="field">
-        <label class="label">Gegenereerde tekst</label>
-        <div class="generated-text-container">
-          <textarea formControlName="generatedText" placeholder="Hier verschijnt de gegenereerde tekst..."
-            class="text-area" [class.loading]="isLoading"></textarea>
-          <div *ngIf="isLoading" class="loader-container">
-            <div class="loader"></div>
-            <span>Bezig met genereren...</span>
-          </div>
+  <div class="scrollable-content">
+    <form [formGroup]="textForm" class="form">
+      <div class="text-fields">
+        <!-- Original text area -->
+        <div class="field">
+          <label class="label">Originele tekst</label>
+          <textarea
+            formControlName="originalText"
+            placeholder="Voer hier je originele tekst in..."
+            class="text-area"
+          ></textarea>
         </div>
-        <label class="label-helper"
-          >Bent u niet tevreden met het resultaat? Pas eventueel aan en druk
-          vervolgens op finaliseer!</label
-        >
-      </div>
-    </div>
 
-    <!-- Suggestions area -->
-    <div class="suggestions-area" [class.visible]="suggestions.length > 0">
-      <label class="label">Suggesties</label>
-      <div class="suggestions-container">
-        <div
-          *ngFor="let suggestion of suggestions; let i = index"
-          class="suggestion-item"
-        >
-          <div class="suggestion-content">
-            <div class="original-text">
-              <strong>Originele tekst:</strong>
-              <p>{{ suggestion.incorrect_part }}</p>
-            </div>
-            <div class="corrected-text">
-              <strong>Suggestie:</strong>
-              <p>{{ suggestion.corrected_part }}</p>
-            </div>
-            <div class="explanation">
-              <small>{{ suggestion.explanation }}</small>
+        <!-- Generated text area -->
+        <div class="field">
+          <label class="label">Gegenereerde tekst</label>
+          <div class="generated-text-container">
+            <textarea
+              formControlName="generatedText"
+              placeholder="Hier verschijnt de gegenereerde tekst..."
+              class="text-area"
+              [class.loading]="isLoading"
+            ></textarea>
+            <div *ngIf="isLoading" class="loader-container">
+              <div class="loader"></div>
+              <span>Bezig met genereren...</span>
             </div>
           </div>
-          <div class="suggestion-actions">
-            <button
-              type="button"
-              class="button accept"
-              (click)="acceptSuggestion(i)"
-            >
-              Accepteren
-            </button>
-            <button
-              type="button"
-              class="button reject"
-              (click)="rejectSuggestion(i)"
-            >
-              Weigeren
-            </button>
-          </div>
+          <label class="label-helper"
+            >Bent u niet tevreden met het resultaat? Pas eventueel aan en druk
+            vervolgens op finaliseer!</label
+          >
         </div>
       </div>
-    </div>
 
-    <div class="controls">
-      <div class="select-container">
-        <label class="label">Medium type</label>
-        <select formControlName="mediumType" class="select" id="mediumTypeSelect">
-          <option value="" disabled style="color: #d0d0d0">
-            Selecteer een medium
-          </option>
-          <option value="artikel">Artikel</option>
-        </select>
+      <!-- Suggestions area -->
+      <div class="suggestions-area" [class.visible]="suggestions.length > 0">
+        <label class="label">Suggesties</label>
+        <div class="suggestions-container">
+          <div
+            *ngFor="let suggestion of suggestions; let i = index"
+            class="suggestion-item"
+          >
+            <div class="suggestion-content">
+              <div class="original-text">
+                <strong>Originele tekst:</strong>
+                <p>{{ suggestion.incorrect_part }}</p>
+              </div>
+              <div class="corrected-text">
+                <strong>Suggestie:</strong>
+                <p>{{ suggestion.corrected_part }}</p>
+              </div>
+              <div class="explanation">
+                <small>{{ suggestion.explanation }}</small>
+              </div>
+            </div>
+            <div class="suggestion-actions">
+              <button
+                type="button"
+                class="button accept"
+                (click)="acceptSuggestion(i)"
+              >
+                Accepteren
+              </button>
+              <button
+                type="button"
+                class="button reject"
+                (click)="rejectSuggestion(i)"
+              >
+                Weigeren
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
 
-      <div class="buttons">
-        <button type="button" class="button generalize" (click)="onGeneralize()">
-          Generaliseer
-        </button>
-        <button type="button" class="button finalize" (click)="onFinalize()">
-          Finaliseer
-        </button>
+      <div class="controls">
+        <div class="select-container">
+          <label class="label">Medium type</label>
+          <select
+            formControlName="mediumType"
+            class="select"
+            id="mediumTypeSelect"
+          >
+            <option value="" disabled style="color: #d0d0d0">
+              Selecteer een medium
+            </option>
+            <option value="artikel">Artikel</option>
+          </select>
+        </div>
+
+        <div class="buttons">
+          <button
+            type="button"
+            class="button generalize"
+            (click)="onGeneralize()"
+          >
+            Genereer
+          </button>
+          <button type="button" class="button finalize" (click)="onFinalize()">
+            Opslaan
+          </button>
+        </div>
       </div>
-    </div>
-  </form>
+    </form>
+  </div>
 </div>
