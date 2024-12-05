@@ -29,7 +29,10 @@ def save_to_json(data, filename):
 
     for text in data:
         if text not in seen_texts:
-            unique_data.append({"text": text})
+            unique_data.append({
+                "text_type": "SocialMedia",
+                "text": text
+            })
             seen_texts.add(text)
 
     # Save to JSON

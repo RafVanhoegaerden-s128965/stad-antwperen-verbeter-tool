@@ -5,6 +5,7 @@ router = APIRouter()
 
 
 def post_data(data: dict):
+    text_type = data.get("text_type")
     url = data.get("url")
     text = data.get("text")
 
@@ -14,6 +15,7 @@ def post_data(data: dict):
     # The API endpoint for the backend service
     api_url = "http://stad-antwerpen-backend:8000/api/elastic/scraper_data"
     payload = {
+        'text_type': text_type,
         'url': url,
         'text': text
     }
