@@ -5,6 +5,19 @@ from routes import *
 
 def main():
 
+
+    tiktok_data = read_file_as_txt("../data/tiktok_descriptions_raw.txt")
+
+    for index, line in enumerate(tiktok_data):
+        response = post_data({"text_type": "tiktok", "url": "https://www.tiktok.com/@stad_antwerpen", "text": line})
+
+        # Check API for a response code
+        if response.status_code == 200:
+            print(f"[{index + 1} out of {len(tiktok_data)} TikTok descriptions successfully sent to database]")
+        else:
+            print(
+                f"[{index + 1} out of {len(tiktok_data)} TikTok descriptions failed to send to database, status code: {response.status_code}]")
+
     domain = "https://www.antwerpen.be"
     whitelist = [
         "https://antwerpen.be",
@@ -29,17 +42,6 @@ def main():
         else:
             print(f"[{index + 1} out of {len(urls)} Articles failed to send to database, status code: {response.status_code}]")
     close_driver()
-
-    tiktok_data = read_file_as_txt("../data/tiktok_descriptions_raw.txt")
-
-    for index, line in enumerate(tiktok_data):
-        response = post_data({"text_type": "tiktok", "url": "", "text": line})
-
-        # Check API for a response code
-        if response.status_code == 200:
-            print(f"[{index + 1} out of {len(urls)} TikTok descriptions successfully sent to database]")
-        else:
-            print(f"[{index + 1} out of {len(urls)} TikTok descriptions failed to send to database, status code: {response.status_code}]")
 
 
 if __name__ == '__main__':
