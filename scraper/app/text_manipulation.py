@@ -60,3 +60,9 @@ def save_txt_as_file(text_list, filename):
     with open(filename, 'w', encoding='utf-8') as file:
         for line in text_list:
             file.write(line + '\n')
+
+
+def read_file_as_txt(filename):
+    """Read a .txt file and return its contents as a list of text lines."""
+    with open(filename, 'r', encoding='utf-8') as file:
+        return [line.strip() for line in file]
