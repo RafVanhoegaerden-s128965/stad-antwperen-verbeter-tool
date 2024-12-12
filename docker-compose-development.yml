@@ -29,7 +29,10 @@ services:
             - traefik.http.routers.mydashboard.rule=Host(`$TRAEFIK_DASHBOARD_URL`)
             - traefik.http.routers.mydashboard.service=api@internal
             - traefik.http.routers.mydashboard.middlewares=myauth
-            - traefik.http.middlewares.myauth.basicauth.users=$TRAEFIK_DASHBOARD_USER/
+            - traefik.http.middlewares.myauth.basicauth.users=$TRAEFIK_DASHBOARD_USER
+        networks:
+            - scraper
+
     frontend:
         container_name: stad-antwerpen-frontend
         build: ./frontend
@@ -39,6 +42,9 @@ services:
         labels:
             - traefik.enable=true
             - traefik.http.routers.frontend.rule=Host(`$APP_URL`)
+        networks:
+            - scraper
+
     backend:
         container_name: stad-antwerpen-backend
         build: ./backend
@@ -49,6 +55,10 @@ services:
             - traefik.http.routers.backend.entrypoints=websecure
             - traefik.http.routers.backend.tls=true
             - traefik.http.services.backend.loadbalancer.server.port=8000
+            - traefik.http.routers.backend-internal.rule=Host(`antwerpen.localhost`)
+        networks:
+            - scraper
+
     elasticsearch:
         image: docker.elastic.co/elasticsearch/elasticsearch:8.11.1
         container_name: stad-antwerpen-elasticsearch
@@ -56,7 +66,7 @@ services:
             - discovery.type=single-node
             - xpack.security.enabled=false
         healthcheck:
-            test: [ "CMD", "curl", "-f", "http://localhost:9200" ]
+            test: ["CMD", "curl", "-f", "http://localhost:9200"]
             interval: 10s
             timeout: 5s
             retries: 5
@@ -70,19 +80,13 @@ services:
             - 9200:9200
         volumes:
             - es-data:/usr/share/elasticsearch/data
-    scraper:
-        container_name: stad-antwerpen-scraper
-        build: ./scraper
-        env_file: .env
-        depends_on:
-            elasticsearch:
-                condition: service_healthy
-        labels:
-            - traefik.enable=true
-            - traefik.http.routers.scraper.rule=Host(`$APP_URL`) && PathPrefix(`/scraper`)
-            - traefik.http.routers.scraper.entrypoints=websecure
-            - traefik.http.routers.scraper.tls=true
-            - traefik.http.services.scraper.loadbalancer.server.port=3000
+        networks:
+            - scraper
+
 volumes:
     letsencrypt-volume:
     es-data:
+
+networks:
+    scraper:
+        driver: bridge
