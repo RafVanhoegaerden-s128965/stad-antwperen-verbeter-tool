@@ -10,6 +10,9 @@
 To run the application locally for development:
 `docker compose -f docker-compose-development.yml up --build -d`
 
+Then run the scraper locally for development, do this only if you build for the first time:
+`docker compose -f docker-compose-scraper.yml up --build -d`
+
 The application should now be running. Access it at the URL specified in your `.env` file
 
 To stop the local development environment:
@@ -26,6 +29,12 @@ First install uvicorn:
 
 To run the backend locally with uvicorn:
 `uvicorn main:app --reload`
+
+### Scraper
+
+Scraper Resetten
+Verwijder de scraper-status door het volume te resetten:
+`docker-compose -f docker-compose.scraper.yml down -v`
 
 ## Project Structure
 
@@ -45,12 +54,15 @@ Connect to server:
 To deploy the application on a server:
 `docker compose up --build -d`
 
+Then run the scraper on the server, do this only if you build for the first time:
+`docker compose -f docker-compose-scraper.yml up --build -d`
+
 The application should now be running in production mode
 
 To stop the application on the server:
 `docker compose down`
 
-Server domain:
+Server domain: `https://78.46.102.226/`
 
 -   `antwerpen.redactie`
 -   `antwerpen.redactie/api`

@@ -1,0 +1,31 @@
+# docker-compose.scraper.yml
+services:
+    scraper:
+        container_name: stad-antwerpen-scraper
+        build:
+            context: ./scraper
+        env_file: .env
+        volumes:
+            - scraper-state:/app/state
+        command: >
+            sh -c "
+            if [ ! -f /app/state/scraper_run_status ]; then
+              echo 'Running scraper for the first time...';
+              python3 main.py && touch /app/state/scraper_run_status;
+            else
+              echo 'Scraper already executed.';
+            fi"
+        labels:
+            - traefik.enable=true
+            - traefik.http.routers.scraper.rule=Host(`$APP_URL`) && PathPrefix(`/scraper`)
+            - traefik.http.routers.scraper.entrypoints=websecure
+            - traefik.http.routers.scraper.tls=true
+        networks:
+            - scraper
+
+volumes:
+    scraper-state:
+
+networks:
+    scraper:
+        driver: bridge
