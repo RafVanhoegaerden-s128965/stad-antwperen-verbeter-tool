@@ -10,7 +10,7 @@
       <div class="field">
         <label class="label">Originele tekst</label>
         <textarea formControlName="originalText" placeholder="Voer hier je originele tekst in..."
-          class="text-area"></textarea>
+          class="text-area" [(ngModel)]="textInput"></textarea>
       </div>
 
       <!-- Generated text area -->
@@ -79,7 +79,10 @@
           <option value="" disabled style="color: #d0d0d0">
             Selecteer een medium
           </option>
-          <option value="artikel">Artikel</option>
+          <option value="pers">Artikel</option>
+          <option value="socialmedia">Sociale media</option>
+          <option value="tiktok">TikTok</option>
+          <option value="sms">sms</option>
         </select>
       </div>
 

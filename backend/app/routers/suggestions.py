@@ -7,15 +7,16 @@ import datetime
 import json
 import re
 from api.cohere_llm import CohereLLM
+from api.openai_llm import OpenAILLM
 import os
 
 router = APIRouter()
 
 # LLM configuration
 COHERE_API_KEY = os.getenv('COHERE_API_KEY')
-# OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
+OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
 cohere_model = CohereLLM(api_key=COHERE_API_KEY)
-# openai_model = OpenAILLM(api_key=OPENAI_API_KEY)
+openai_model = OpenAILLM(api_key=OPENAI_API_KEY)
 
 @router.get("/suggestions")
 def get_all_suggestions(
@@ -106,6 +107,14 @@ def create_suggestions(
 
         if model.lower() == "cohere":
             result = cohere_model.get_suggestions(
+                text,
+                text_type,
+                temperature=temperature,
+                frequency_penalty=frequency_penalty,
+                presence_penalty=presence_penalty
+            )
+        elif model.lower() == "openai":
+            result = openai_model.get_suggestions(
                 text,
                 text_type,
                 temperature=temperature,
