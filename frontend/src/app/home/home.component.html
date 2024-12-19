@@ -17,26 +17,26 @@
           ></textarea>
         </div>
 
-        <!-- Generated text area -->
+        <!-- Generated text area (now a contenteditable div for highlighting) -->
         <div class="field">
           <label class="label">Gegenereerde tekst</label>
           <div class="generated-text-container">
-            <textarea
-              formControlName="generatedText"
-              placeholder="Hier verschijnt de gegenereerde tekst..."
-              class="text-area"
+            <div
+              class="generated-text-view"
+              contenteditable="true"
               [class.loading]="isLoading"
-            ></textarea>
+              (input)="onGeneratedTextChange($event)"
+              #generatedTextDiv
+            ></div>
             <div *ngIf="isLoading" class="loader-container">
               <div class="loader"></div>
               <span>Bezig met genereren...</span>
             </div>
           </div>
-          <label class="label-helper"
-            >Bent u niet tevreden met het resultaat? Pas eventueel aan en druk
-            vervolgens op finaliseer!</label
-          >
-        </div>
+          <label class="label-helper">
+            Bent u niet tevreden met het resultaat? Pas eventueel aan en druk vervolgens op finaliseer!
+          </label>
+        </div>        
       </div>
 
       <!-- Suggestions area -->
@@ -64,14 +64,14 @@
               <button
                 type="button"
                 class="button accept"
-                (click)="acceptSuggestion(i)"
+                (click)="acceptSuggestionById(suggestion.id)"
               >
                 Accepteren
               </button>
               <button
                 type="button"
                 class="button logout"
-                (click)="rejectSuggestion(i)"
+                (click)="rejectSuggestionById(suggestion.id)"
               >
                 Weigeren
               </button>
@@ -83,11 +83,7 @@
       <div class="controls">
         <div class="select-container">
           <label class="label">Medium type</label>
-          <select
-            formControlName="mediumType"
-            class="select"
-            id="mediumTypeSelect"
-          >
+          <select formControlName="mediumType" class="select" id="mediumTypeSelect">
             <option value="" disabled style="color: #d0d0d0">
               Selecteer een medium
             </option>
@@ -114,3 +110,25 @@
     </form>
   </div>
 </div>
+
+<!-- Tooltip template -->
+<div class="suggestion-tooltip"
+     *ngIf="tooltipVisible"
+     [style.top.px]="tooltipY"
+     [style.left.px]="tooltipX"
+     (mouseenter)="onTooltipMouseEnter()"
+     (mouseleave)="onTooltipMouseLeave()">
+  <div class="tooltip-content">
+    <div *ngFor="let suggestion of currentTooltipSuggestions">
+      <strong>Originele tekst:</strong> {{ suggestion.incorrect_part }}<br>
+      <strong>Suggestie:</strong> {{ suggestion.corrected_part }}<br>
+      <small>{{ suggestion.explanation }}</small>
+      <div class="tooltip-actions">
+        <button class="button accept" (click)="acceptSuggestionById(suggestion.id)">Accepteren</button>
+        <button class="button logout" (click)="rejectSuggestionById(suggestion.id)">Weigeren</button>
+      </div>
+      <hr *ngIf="suggestion !== currentTooltipSuggestions[currentTooltipSuggestions.length - 1]">
+    </div>
+  </div>
+</div>
+
