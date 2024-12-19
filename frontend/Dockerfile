@@ -6,7 +6,7 @@ COPY . .
 RUN npm run build
 
 FROM nginx:alpine
-COPY .docker/nginx.conf /etc/nginx/nginx.con
+COPY .docker/nginx.conf /etc/nginx/conf.d/default.conf
 COPY --from=build /app/dist/my-angular-app/browser /usr/share/nginx/html
 
 EXPOSE 80

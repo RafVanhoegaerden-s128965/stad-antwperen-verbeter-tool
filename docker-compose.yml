@@ -39,7 +39,7 @@ services:
             - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
         labels:
             - "traefik.enable=true"
-            - "traefik.http.routers.elasticsearch.rule=Host(`elasticsearch.${HOSTNAME}`) && PathPrefix(`/es`)"
+            - "traefik.http.routers.elasticsearch.rule=Host(`elasticsearch.${HOSTNAME}`)"
             - "traefik.http.routers.elasticsearch.entrypoints=websecure"
             - "traefik.http.routers.elasticsearch.tls=true"
             - "traefik.http.routers.elasticsearch.tls.certresolver=letsencrypt"
@@ -50,21 +50,10 @@ services:
             - es-data-prod:/usr/share/elasticsearch/data
         networks:
             - traefik
-    scraper:
-        container_name: stad-antwerpen-scraper
-        build: ./scraper
-        env_file: .env
-        depends_on:
-            - elasticsearch
-        labels:
-            - traefik.enable=true
-            - traefik.http.routers.backend.rule=Host(`$HOSTNAME`) && PathPrefix(`/scraper`)
-            - traefik.http.services.backend-service.loadbalancer.server.port=3000
-        networks:
-            - traefik
 volumes:
     es-data-prod:
 
 networks:
     traefik:
         external: true
+        name: traefik
