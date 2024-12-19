@@ -17,6 +17,7 @@ COHERE_API_KEY = os.getenv('COHERE_API_KEY')
 OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
 cohere_model = CohereLLM(api_key=COHERE_API_KEY)
 openai_model = OpenAILLM(api_key=OPENAI_API_KEY)
+DEFAULT_MODEL = "cohere"
 
 @router.get("/suggestions")
 def get_all_suggestions(
@@ -94,7 +95,7 @@ def get_suggestions_by_raw_text_id(
 def create_suggestions(
     raw_text_id: str,
     current_user: str = Depends(get_current_user),
-    model: str = "cohere",
+    model: str = DEFAULT_MODEL,
     temperature: float = Query(0.65, ge=0, le=1),
     frequency_penalty: float = Query(0.0, ge=0, le=1),
     presence_penalty: float = Query(0.0, ge=0, le=1),
@@ -163,7 +164,7 @@ def create_suggestions(
 def update_suggestion(
     suggestion_id: str,
     current_user: str = Depends(get_current_user),
-    model: str = "cohere",
+    model: str = DEFAULT_MODEL,
     temperature: float = Query(0.65, ge=0, le=1),
     frequency_penalty: float = Query(0.0, ge=0, le=1),
     presence_penalty: float = Query(0.0, ge=0, le=1),
