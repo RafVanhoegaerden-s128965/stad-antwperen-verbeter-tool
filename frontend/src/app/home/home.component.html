@@ -1,17 +1,30 @@
-<div class="container">
+<div class="page">
   <div class="header">
-    <h2 class="title">Slimme Schrijftool</h2>
+    <h2 class="title">Slimme Verbetertool</h2>
     <button class="button logout" (click)="onLogout()">Uitloggen</button>
   </div>
+  <div class="description">
+    <label class="label title"
+      >Deze tool kan gebruikt worden om teksten te verbeteren aan de hand van de
+      correcte huisstijlgids voor verschillende media. U kunt uw originele tekst
+      invoeren en het gewenste mediumtype selecteren (artikel, sociale media,
+      TikTok of sms). De tool genereert vervolgens een verbeterde versie die
+      past bij de gekozen stijl. Het systeem biedt ook specifieke suggesties
+      voor verbeteringen, die u per stuk kunt accepteren of weigeren. Bent u
+      tevreden met het resultaat? Dan kunt u de definitieve tekst opslaan. Deze
+      tool is ideaal voor het consistent houden van uw communicatie over
+      verschillende mediakanalen.
+    </label>
+  </div>
 
-  <div class="scrollable-content">
+  <div class="body">
     <form [formGroup]="textForm" class="form">
       <div class="text-fields">
         <!-- Original text area -->
-        <div class="field">
+        <div class="input-container">
           <label class="label">Originele tekst</label>
           <textarea
-            formControlName="originalText"
+            formControlName="inputText"
             placeholder="Voer hier je originele tekst in..."
             class="text-area"
           ></textarea>
@@ -40,7 +53,7 @@
       </div>
 
       <!-- Suggestions area -->
-      <div class="suggestions-area" [class.visible]="suggestions.length > 0">
+      <div class="suggestions-box" [class.visible]="suggestions.length > 0">
         <label class="label">Suggesties</label>
         <div class="suggestions-container">
           <div
