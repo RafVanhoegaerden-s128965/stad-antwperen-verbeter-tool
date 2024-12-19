@@ -1,33 +1,33 @@
 /* Layout */
 .page {
-  min-height: 100vh;
-  padding: 1.5rem;
+  min-height: 90vh;
+  padding: 3rem 3rem;
   background-color: #f9fafb;
 }
 
 /* Header Section */
 .header {
   display: flex;
+  flex-direction: column;
   justify-content: space-between;
   align-items: center;
   padding: 1rem;
 }
 
 .title {
-  font-size: 2rem;
+  font-size: 2.5rem;
   font-weight: bold;
   color: #161925;
-  line-height: 1;
 }
 
 /* Description Section */
 .description {
-  padding-left: 2rem;
-  padding-right: 2rem;
+  width: 60%;
+  align-self: center;
+  text-align: center;
 }
 
 .description .label {
-  width: 70%;
   font-size: 0.875rem;
   color: #6b7280;
   line-height: 1.5;
@@ -56,7 +56,7 @@
 .input-text-view,
 .output-text-view {
   width: 100%;
-  height: 300px;
+  height: 400px;
   padding: 0.75rem;
   border: 1px solid #e5e7eb;
   font-family: inherit;
@@ -67,10 +67,12 @@
   color: #000000;
   white-space: pre-wrap;
   overflow: auto;
+  resize: none;
+  position: relative;
 }
 
-.output-text-view {
-  margin-top: 1rem;
+.output-container{
+  margin-top: 0.5rem;
 }
 
 .input-text-view:focus,
@@ -84,7 +86,6 @@
 .label {
   display: block;
   font-weight: 500;
-  margin-bottom: 0.5rem;
   color: #374151;
 }
 
@@ -95,12 +96,41 @@
   margin-top: 0.5rem;
 }
 
+/* Loading State */
+.loader-container {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  background-color: rgba(255, 255, 255, 0.9);
+  padding: 1rem;
+  border-radius: 0.5rem;
+}
+
+.loader {
+  width: 1.5rem;
+  height: 1.5rem;
+  border: 2px solid #e5e7eb;
+  border-top-color: #3b82f6;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
 /* Suggestions Box */
 .suggestions-box {
   border: 1px solid #e5e7eb;
   padding: 1rem;
   margin-bottom: 1.5rem;
   background-color: white;
+  display: none;
+}
+
+.suggestions-box.visible {
+  display: block;
 }
 
 .suggestions-container {
@@ -130,39 +160,47 @@
   color: #6b7280;
 }
 
-/* Controls Section */
+/* Actions Section */
 .controls {
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
-  gap: 1rem;
 }
 
-.select-container {
-  width: 250px;
-}
-
-.select-container,
-.buttons {
-  margin-top: 1.5rem;
-}
-
-.select {
-  width: 100%;
-  padding: 0.5rem;
+.media-select {
+  width: 110%;
   border: 1px solid #e5e7eb;
-  border-radius: 0.5rem;
   background-color: white;
+  font-size: 0.9rem;
   height: 38px;
+  padding-left: 6px;
+  padding-right: 6px;
+  color: #374151;
+}
+
+.media-select option[value=""] {
+  color: #6b7280;
+}
+
+.media-select.error {
+  border-color: #ef4444;
+  box-shadow: 0 0 0 1px rgba(239, 68, 68, 0.2);
+}
+
+.error-message {
+  display: block;
+  color: #ef4444;
+  font-size: 0.8rem;
+  margin-top: 0.25rem;
 }
 
 .buttons {
   display: flex;
+  align-self: center;
   gap: 1rem;
 }
 
 /* Button Styles */
-.button {
+.generate-button, .finalise-button {
   padding: 0.5rem 1rem;
   font-weight: 500;
   cursor: pointer;
@@ -170,36 +208,26 @@
   height: 38px;
   display: flex;
   align-items: center;
-  justify-content: center;
-  border-radius: 0.5rem;
 }
 
-.logout {
-  background-color: #ef4444;
-  color: white;
-  padding: 0.5rem 1.5rem;
+
+.generate-button {
+  background-color: #f9fafb;
+  border: solid 1px #3b82f6;
+  color: #3b82f6;
 }
 
-.logout:hover {
-  background-color: #dc2626;
+.generate-button:hover {
+  background-color: #dee4eb;
 }
 
-.generalize {
+.finalise-button {
   background-color: #3b82f6;
   color: white;
 }
 
-.generalize:hover {
+.finalise-button:hover {
   background-color: #2563eb;
-}
-
-.finalize {
-  background-color: #10b981;
-  color: white;
-}
-
-.finalize:hover {
-  background-color: #059669;
 }
 
 /* Loading State */

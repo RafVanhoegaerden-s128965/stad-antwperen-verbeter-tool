@@ -25,6 +25,7 @@ interface Correction {
   styleUrls: ['./home.component.css'],
   encapsulation: ViewEncapsulation.None
 })
+
 export class HomeComponent {
   textForm: FormGroup;
   private currentRawTextId?: string;
@@ -33,7 +34,7 @@ export class HomeComponent {
   private originalResponseText: string = '';
   isLoading: boolean = false;
 
-  @ViewChild('generatedTextDiv') generatedTextDiv!: ElementRef<HTMLDivElement>;
+  private lastChangePosition: { start: number, end: number } | null = null;
 
   tooltipVisible = false;
   tooltipX = 0;
@@ -57,8 +58,8 @@ export class HomeComponent {
     private router: Router
   ) {
     this.textForm = this.formBuilder.group({
-      originalText: [''],
-      generatedText: [''],
+      inputText: [''],
+      outputText: [''],
       mediumType: [''],
     });
     let text = localStorage.getItem('textInput');
@@ -67,11 +68,11 @@ export class HomeComponent {
     }
   }
 
-  async onGeneralize() {
-    const originalText = this.textForm.get('originalText')?.value;
+  async onGenerate() {
+    const inputText = this.textForm.get('inputText')?.value;
     let mediumType = this.textForm.get('mediumType')?.value;
 
-    if (!originalText || !mediumType) {
+    if (!inputText || !mediumType) {
       console.error('Please fill in both text and medium type');
       return;
     }
@@ -86,7 +87,7 @@ export class HomeComponent {
       });
       this.isLoading = true;
 
-      const rawTextId = await this.apiService.postRawText(originalText, mediumType);
+      const rawTextId = await this.apiService.postRawText(inputText, mediumType);
       this.currentRawTextId = rawTextId;
 
       if (!this.currentRawTextId) {
@@ -170,18 +171,6 @@ export class HomeComponent {
     }
   }
 
-  private applyAcceptedSuggestion(suggestion: Correction) {
-    // Replace the portion of originalResponseText with the corrected_part
-    const start = suggestion.info.startPos;
-    const end = suggestion.info.endPos;
-
-    const beforeText = this.originalResponseText.substring(0, start);
-    const afterText = this.originalResponseText.substring(end);
-    this.originalResponseText = beforeText + suggestion.corrected_part + afterText;
-  }
-
-
-
   acceptSuggestionById(suggestionId?: string) {
     if (!suggestionId) return;
     const index = this.suggestions.findIndex(s => s.id === suggestionId);
@@ -208,10 +197,7 @@ export class HomeComponent {
     this.currentTooltipSuggestions = [];
   }
 
-
-
-
-  onFinalize() {
+  onSave() {
     if (!this.currentRawTextId || !this.currentSuggestionId) {
       console.error('Missing required IDs for finalization');
       return;
@@ -230,8 +216,8 @@ export class HomeComponent {
 
         // Reset form
         this.textForm.patchValue({
-          originalText: '',
-          generatedText: '',
+          inputText: '',
+          outputText: '',
           mediumType: '',
         });
 
@@ -240,11 +226,6 @@ export class HomeComponent {
       .catch(error => {
         console.error('Error during finalization:', error);
       });
-  }
-
-  onLogout(): void {
-    this.authService.logout();
-    this.router.navigate(['/login']);
   }
 
   onTooltipMouseEnter() {

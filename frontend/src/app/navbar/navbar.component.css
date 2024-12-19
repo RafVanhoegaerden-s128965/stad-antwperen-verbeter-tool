@@ -12,41 +12,58 @@
   height: 10vh;
   width: 100%;
   background-color: #e6e8e6;
-}
-
-.container {
-  height: 100%;
+  display: flex;
+  align-items: center;
 }
 
 .nav-content {
   height: 100%;
   display: flex;
   align-items: center;
-  gap: 1rem;
+  justify-content: flex-start;
+  flex: 1;
 }
 
 .logo-container {
   height: 100%;
   display: flex;
-  align-content: start;
+  align-items: center;
+  padding-right: 1rem;
 }
 
 .logo-img {
   height: 100%;
   width: auto;
   object-fit: contain;
+  align-self: flex-start;
 }
 
 .breadcrumb {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  height: 100%;
 }
 
 .breadcrumb a {
   color: #161925;
   text-decoration: none;
-  position: relative;
   font-weight: 600;
   font-size: 20px;
+}
+
+.logout-button {
+  background-color: #ef4444;
+  color: white;
+  padding: 0.5rem 1.5rem;
+  margin-right: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  height: 38px;
+  display: flex;
+  align-items: center;
+}
+
+.logout-button:hover {
+  background-color: #dc2626;
 }

@@ -1,22 +1,18 @@
 <div class="page">
   <div class="header">
     <h2 class="title">Slimme Verbetertool</h2>
-    <button class="button logout" (click)="onLogout()">Uitloggen</button>
+    <div class="description">
+      <label class="label title">
+        Verbeter uw teksten volgens de huisstijlgids van verschillende media. 
+        Kies een medium (artikel, sociale media, TikTok of SMS) en voer uw tekst in. 
+        De tool analyseert uw tekst en biedt gerichte suggesties voor verbetering aan. 
+        Deze suggesties kunt u per stuk accepteren of weigeren, zodat u volledige controle houdt over de eindtekst. 
+        Wanneer u tevreden bent, slaat u eenvoudig uw definitieve versie op. 
+        Zo zorgt u voor consistente en professionele communicatie over al uw mediakanalen.
+      </label>
+    </div>
   </div>
-  <div class="description">
-    <label class="label title"
-      >Deze tool kan gebruikt worden om teksten te verbeteren aan de hand van de
-      correcte huisstijlgids voor verschillende media. U kunt uw originele tekst
-      invoeren en het gewenste mediumtype selecteren (artikel, sociale media,
-      TikTok of sms). De tool genereert vervolgens een verbeterde versie die
-      past bij de gekozen stijl. Het systeem biedt ook specifieke suggesties
-      voor verbeteringen, die u per stuk kunt accepteren of weigeren. Bent u
-      tevreden met het resultaat? Dan kunt u de definitieve tekst opslaan. Deze
-      tool is ideaal voor het consistent houden van uw communicatie over
-      verschillende mediakanalen.
-    </label>
-  </div>
-
+  
   <div class="body">
     <form [formGroup]="textForm" class="form">
       <div class="text-fields">
@@ -39,10 +35,11 @@
             [class.loading]="isLoading"
             (input)="onGeneratedTextChange($event)"
             #generatedTextDiv
-          ></div>
-          <div *ngIf="isLoading" class="loader-container">
-            <div class="loader"></div>
-            <span>Bezig met genereren...</span>
+          >
+            <div *ngIf="isLoading" class="loader-container">
+              <div class="loader"></div>
+              <span>Bezig met genereren...</span>
+            </div>
           </div>
           <label class="label-helper">
             Bent u niet tevreden met het resultaat? Pas eventueel aan en druk
@@ -92,33 +89,36 @@
         </div>
       </div>
 
+      <!-- Actions area -->
       <div class="controls">
         <div class="select-container">
           <label class="label">Medium type</label>
           <select
             formControlName="mediumType"
-            class="select"
-            id="mediumTypeSelect"
+            class="media-select"
+            
           >
-            <option value="" disabled style="color: #d0d0d0">
-              Selecteer een medium
-            </option>
+          <!-- [class.error]="shouldShowError('mediumType')" -->
+            <option value="" disabled>Selecteer een medium</option>
             <option value="article">Artikel</option>
             <option value="socialmedia">Sociale media</option>
             <option value="tiktok">TikTok</option>
-            <option value="sms">sms</option>
+            <option value="sms">SMS</option>
           </select>
+          <!-- <span *ngIf="shouldShowError('mediumType')" class="error-message">
+            Selecteer een medium type!
+          </span> -->
         </div>
-
+        
         <div class="buttons">
           <button
             type="button"
-            class="button generalize"
-            (click)="onGeneralize()"
+            class="generate-button"
+            (click)="onGenerate()"
           >
             Genereer
           </button>
-          <button type="button" class="button finalize" (click)="onFinalize()">
+          <button type="button" class="finalise-button" (click)="onSave()">
             Opslaan
           </button>
         </div>
