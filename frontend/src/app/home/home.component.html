@@ -13,18 +13,6 @@
           class="text-area" [(ngModel)]="textInput"></textarea>
       </div>
 
-      <!-- Generated text area -->
-      <div class="field">
-        <label class="label">Gegenereerde tekst</label>
-        <div class="generated-text-container">
-          <textarea formControlName="generatedText" placeholder="Hier verschijnt de gegenereerde tekst..."
-            class="text-area" [class.loading]="isLoading"></textarea>
-          <div *ngIf="isLoading" class="loader-container">
-            <div class="loader"></div>
-            <span>Bezig met genereren...</span>
-          </div>
-        </div>
-
         <!-- Generated text area -->
         <div class="field">
           <label class="label">Gegenereerde tekst</label>
@@ -45,7 +33,6 @@
             vervolgens op finaliseer!</label
           >
         </div>
-      </div>
 
       <!-- Suggestions area -->
       <div class="suggestions-area" [class.visible]="suggestions.length > 0">
@@ -88,7 +75,7 @@
         </div>
       </div>
 
-    <div class="controls">
+      <div class="controls">
       <div class="select-container">
         <label class="label">Medium type</label>
         <select formControlName="mediumType" class="select" id="mediumTypeSelect">
@@ -115,6 +102,6 @@
           </button>
         </div>
       </div>
-    </form>
-  </div>
+    </div>
+  </form>
 </div>
