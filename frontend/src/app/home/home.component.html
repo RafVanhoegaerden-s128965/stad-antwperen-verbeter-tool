@@ -4,14 +4,18 @@
     <button class="button logout" (click)="onLogout()">Uitloggen</button>
   </div>
 
-  <form [formGroup]="textForm" class="form">
-    <div class="text-fields">
-      <!-- Original text area -->
-      <div class="field">
-        <label class="label">Originele tekst</label>
-        <textarea formControlName="originalText" placeholder="Voer hier je originele tekst in..."
-          class="text-area" [(ngModel)]="textInput"></textarea>
-      </div>
+  <div class="scrollable-content">
+    <form [formGroup]="textForm" class="form">
+      <div class="text-fields">
+        <!-- Original text area -->
+        <div class="field">
+          <label class="label">Originele tekst</label>
+          <textarea
+            formControlName="originalText"
+            placeholder="Voer hier je originele tekst in..."
+            class="text-area"
+          ></textarea>
+        </div>
 
         <!-- Generated text area -->
         <div class="field">
@@ -33,6 +37,7 @@
             vervolgens op finaliseer!</label
           >
         </div>
+      </div>
 
       <!-- Suggestions area -->
       <div class="suggestions-area" [class.visible]="suggestions.length > 0">
@@ -65,7 +70,7 @@
               </button>
               <button
                 type="button"
-                class="button reject"
+                class="button logout"
                 (click)="rejectSuggestion(i)"
               >
                 Weigeren
@@ -76,18 +81,22 @@
       </div>
 
       <div class="controls">
-      <div class="select-container">
-        <label class="label">Medium type</label>
-        <select formControlName="mediumType" class="select" id="mediumTypeSelect">
-          <option value="" disabled style="color: #d0d0d0">
-            Selecteer een medium
-          </option>
-          <option value="pers">Artikel</option>
-          <option value="socialmedia">Sociale media</option>
-          <option value="tiktok">TikTok</option>
-          <option value="sms">sms</option>
-        </select>
-      </div>
+        <div class="select-container">
+          <label class="label">Medium type</label>
+          <select
+            formControlName="mediumType"
+            class="select"
+            id="mediumTypeSelect"
+          >
+            <option value="" disabled style="color: #d0d0d0">
+              Selecteer een medium
+            </option>
+            <option value="article">Artikel</option>
+            <option value="socialmedia">Sociale media</option>
+            <option value="tiktok">TikTok</option>
+            <option value="sms">sms</option>
+          </select>
+        </div>
 
         <div class="buttons">
           <button
@@ -102,6 +111,6 @@
           </button>
         </div>
       </div>
-    </div>
-  </form>
+    </form>
+  </div>
 </div>

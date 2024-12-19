@@ -150,8 +150,9 @@ export class HomeComponent {
     }
 
     this.textForm.patchValue({
-      generatedText: currentText,
+        generatedText: this.originalResponseText,
     });
+    }
   }
 
   acceptSuggestion(index: number) {
@@ -170,10 +171,10 @@ export class HomeComponent {
     // Update original response text for future reference
     this.originalResponseText = newText;
 
-    // Remove the suggestion and update the display
+    // Remove the accepted suggestion
     this.suggestions.splice(index, 1);
 
-    // Shift other suggestions and remove overlaps
+    // Adjust positions of remaining suggestions and remove overlaps
     const correctedPartLength = suggestion.corrected_part.length;
     const originalPartLength = suggestion.incorrect_part.length;
     const offsetDifference = correctedPartLength - originalPartLength;
@@ -206,27 +207,8 @@ export class HomeComponent {
   }
 
   rejectSuggestion(index: number) {
-    const suggestion = this.suggestions[index];
-
-    // Keep the original text at this position
-    const startPos = suggestion.info?.startPos ?? 0;
-    const endPos = suggestion.info?.endPos ?? 0;
-
-    const currentText = this.textForm.get('generatedText')?.value;
-    const newText =
-      currentText.substring(0, startPos) +
-      suggestion.incorrect_part +
-      currentText.substring(endPos);
-
-    // Update original response text for future reference
-    this.originalResponseText = newText;
-
-    // Remove the suggestion
+    // If user rejects the suggestion, just remove it and keep text as is
     this.suggestions.splice(index, 1);
-
-    this.textForm.patchValue({
-      generatedText: newText,
-    });
   }
 
   async onFinalize() {
