@@ -78,18 +78,20 @@ export class HomeComponent {
         generatedText: '',
       });
 
-      if (this.currentRawTextId && this.currentSuggestionId) {
-        console.log('Updating existing text and suggestions...');
-        await this.apiService.updateRawText(
-          this.currentRawTextId,
-          originalText,
-          mediumType
-        );
-        const updatedSuggestions = await this.apiService.getSuggestion(
-          this.currentSuggestionId
-        );
-        this.processSuggestions(updatedSuggestions);
-      } else {
+      // if (this.currentRawTextId && this.currentSuggestionId) {
+      //   console.log('Updating existing text and suggestions...');
+      //   await this.apiService.updateRawText(
+      //     this.currentRawTextId,
+      //     originalText,
+      //     mediumType
+      //   );
+      //   const updatedSuggestions = await this.apiService.getSuggestion(
+      //     this.currentSuggestionId
+      //   );
+      //   this.processSuggestions(updatedSuggestions);
+      // }
+      // else
+      {
         console.log('Creating new text and suggestions...');
         const rawTextId = await this.apiService.postRawText(
           originalText,
@@ -127,28 +129,8 @@ export class HomeComponent {
     if (response?.suggestions?.corrections) {
       this.suggestions = response.suggestions.corrections;
       this.originalResponseText = response.text;
-      this.updateGeneratedText();
-    }
-  }
-
-  private updateGeneratedText() {
-    let currentText = this.originalResponseText;
-
-    // Sort suggestions by their position in descending order to avoid offset issues
-    const sortedSuggestions = [...this.suggestions].sort(
-      (a, b) => (b.info?.startPos ?? 0) - (a.info?.startPos ?? 0)
-    );
-
-    for (const suggestion of sortedSuggestions) {
-      const startPos = suggestion.info?.startPos ?? 0;
-      const endPos = suggestion.info?.endPos ?? 0;
-
-      // Keep the original text for this suggestion
-      const beforeText = currentText.substring(0, startPos);
-      const afterText = currentText.substring(endPos);
-      currentText = beforeText + suggestion.incorrect_part + afterText;
-    }
-
+      
+      // Removed Update logic
     this.textForm.patchValue({
         generatedText: this.originalResponseText,
     });
