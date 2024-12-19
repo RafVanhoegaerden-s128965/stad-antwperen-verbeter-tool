@@ -32,8 +32,25 @@ async def post_scraper_data(
             raise HTTPException(status_code=500, detail="Failed to store data in Elasticsearch")
 
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to communicate with Elasticsearch: {str(e)}") 
-    
+        raise HTTPException(status_code=500, detail=f"Failed to communicate with Elasticsearch: {str(e)}")
+
+@router.delete("/scraper/training_data")
+def delete_all_scraped_data(
+        current_user: str = Depends(get_current_user),
+        es: Elasticsearch = Depends(get_es_client)
+):
+    try:
+        # Perform delete_by_query to remove all documents
+        result = es.delete_by_query(index="scraped_data", body={"query": {"match_all": {}}})
+
+        return {
+            "message": "All scraped data has been deleted successfully",
+            "deleted": result["deleted"],
+            "total": result["total"]
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to delete scraped data: {str(e)}")
+
 # # Endpoint: Health check
 # @app.get("/health")
 # def health_check():

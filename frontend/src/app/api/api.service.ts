@@ -13,7 +13,8 @@ interface RawTextResponse {
   providedIn: 'root',
 })
 export class ApiService {
-  private baseUrl = 'https://antwerpen.localhost/api';
+  //succes met dit in de env variablen te krijgen
+  private baseUrl = 'https://kevinvanrooy.be/api';
 
   constructor(
     private http: HttpClient,
