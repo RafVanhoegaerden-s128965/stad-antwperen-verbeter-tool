@@ -14,7 +14,7 @@ interface RawTextResponse {
 })
 export class ApiService {
   //succes met dit in de env variablen te krijgen
-  private baseUrl = 'https://kevinvanrooy.be/api';
+  private baseUrl = 'https://antwerpen.localhost/api';
 
   constructor(
     private http: HttpClient,
@@ -88,25 +88,25 @@ export class ApiService {
     }
   }
 
-  // UPDATE raw-text
-  async updateRawText(rawTextId: string, rawText: string, textType: string): Promise<any> {
-    try {
-      const response = await firstValueFrom(
-        this.http.put(
-          this.getFullUrl(`/raw_text/${rawTextId}`),
-          {
-            text: rawText,
-            text_type: textType.toLowerCase()
-          },
-          { headers: this.getHeaders() }
-        )
-      );
-      return response;
-    } catch (error) {
-      console.error('Error updating raw text:', error);
-      throw error;
-    }
-  }
+  // // UPDATE raw-text
+  // async updateRawText(rawTextId: string, rawText: string, textType: string): Promise<any> {
+  //   try {
+  //     const response = await firstValueFrom(
+  //       this.http.put(
+  //         this.getFullUrl(`/raw_text/${rawTextId}`),
+  //         {
+  //           text: rawText,
+  //           text_type: textType.toLowerCase()
+  //         },
+  //         { headers: this.getHeaders() }
+  //       )
+  //     );
+  //     return response;
+  //   } catch (error) {
+  //     console.error('Error updating raw text:', error);
+  //     throw error;
+  //   }
+  // }
 
   // UPDATE suggestion
   async updateSuggestion(suggestionId: string): Promise<any> {

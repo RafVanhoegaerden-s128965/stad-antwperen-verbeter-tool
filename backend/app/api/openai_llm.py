@@ -283,6 +283,8 @@ class OpenAILLM:
         if not any(text_type.lower() == item.value.lower() for item in TextType):
             return {"error": "Invalid text type"}
         
+        text_type = text_type.lower().strip()
+        
         output = ""
         for content in self.get_suggestions_stream(text, text_type, temperature=temperature, frequency_penalty=frequency_penalty, presence_penalty=presence_penalty):
             output += content
