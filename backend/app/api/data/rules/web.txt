@@ -1,0 +1,40 @@
+6. Schrijven voor het web en SEO
+Description: Webteksten vereisen een andere aanpak dan gedrukte teksten. Omdat online lezers voornamelijk scannen, moeten webteksten scanbaar, duidelijk en contextvrij zijn. Vindbaarheid via zoekmachines (SEO) is essentieel om de doelgroep te bereiken.
+
+6.1 Opbouw webteksten
+Summary:
+Titel: Maximaal 7 woorden, belangrijkste zoekwoord vooraan, relevant en zonder leestekens (vraagteken mag wel). Example: Niet "Waarom zou u klikken?", wel "Bespaar met onze subsidies".
+Intro: Kort en relevant, met een zoekterm en een duidelijke call-to-action. Example: "Vraag nu een subsidie aan via onze online tool."
+Bodytekst: Gebruik zoekwoorden, synoniemen, en relevante afgeleiden in een scanbare structuur met opsommingen en links. Vermijd dode links en maak betekenisvolle hyperlinks. Example: Niet "Klik hier", wel "Lees meer over subsidies."
+
+6.2 Vermijd pdf’s
+Summary:
+Pdf-bestanden zijn vaak ontoegankelijk en niet gebruiksvriendelijk. Kies voor webpagina's in plaats van pdf's. Als een pdf onvermijdelijk is, zorg dan dat deze voldoet aan de WCAG-richtlijnen. Example: "Geef informatie als webtekst in plaats van een pdf om voorleessoftware te ondersteunen."
+
+6.3 Ga voor zelfstandige, contextvrije content
+Summary:
+Elke webpagina moet op zichzelf staand begrijpelijk zijn. Vermijd relatieve tijdsaanduidingen zoals "gisteren" of "volgende week", en gebruik specifieke data inclusief jaartal. Example: Niet "Binnenkort start het evenement", wel "Het evenement start op 12 juli 2024."
+
+6.4 Maak je webtekst vindbaar: SEO of Search Engine Optimization
+Summary:
+Gebruik relevante zoekwoorden en synoniemen strategisch in titels, metadata, en tussentitels. Anticipeer op zoekacties van lezers door populaire zoektermen te verwerken. Example: Zoekwoord in titel: "Subsidies aanvragen voor verbouwingen."
+
+6.5 Anticipeer op de zoekacties van je lezers
+Summary:
+Denk na over zoekwoorden die jouw doelgroep zou invoeren en verwerk deze strategisch in je tekst. Example: Zoekwoord: "Parkeren in Antwerpen" verwerkt als: "Ontdek waar je gratis kunt parkeren in Antwerpen."
+
+6.6 Doe aan keyword research
+Summary:
+Gebruik Google Suggest en gerelateerde zoekopdrachten om populaire zoekwoorden te vinden. Pas deze toe in je content. Example: Voor "winkelzondag" gebruik: "winkelzondag Antwerpen" of "koopzondag uren."
+
+6.7 Gebruik relevante zoekwoorden en synoniemen
+Summary:
+Optimaliseer de vindbaarheid van je tekst door variatie in zoektermen in titels, metadata, en bodytekst. Example: Synoniemen zoals "renovatiesubsidies" en "energiepremies."
+
+6.8 Vermijd dubbele content
+Summary:
+Dubbele content leidt tot concurrentie binnen zoekresultaten en verlaagt de zichtbaarheid. Publiceer unieke content en verwijs naar andere pagina's. Example: Niet dezelfde tekst op meerdere websites, maar één bronpagina met links.
+
+6.9 Zet altijd alt-tekst bij afbeeldingen
+Summary:
+Voorzie afbeeldingen van een alt-tekst die het beeld beschrijft, zodat deze toegankelijk zijn voor slechtzienden. Alt-teksten moeten kort, beschrijvend, en relevant zijn. Example: Wel "Een groep mensen beoefent yoga in het park", niet "foto bij artikel."

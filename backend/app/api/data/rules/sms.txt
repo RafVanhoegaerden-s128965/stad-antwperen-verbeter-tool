@@ -1,0 +1,18 @@
+9. Schrijven voor sms
+Description: Sms-berichten zijn geschikt voor dringende, korte communicatie. De boodschap moet direct en bondig zijn.
+
+9.1 Kort en actief
+Summary:
+Gebruik korte zinnen en vermijd hulpwerkwoorden. Example: "Beste Peter, je afspraak is om 14:30 uur in het stadsloket."
+
+9.2 Vermeld de afzender
+Summary:
+Sms-berichten komen van een algemeen nummer. Example: "Team zwembad Wezenberg."
+
+9.3 Call-to-action
+Summary:
+Zet duidelijke instructies in het bericht. Example: "Kom op tijd, zonder afspraak geen toegang."
+
+9.3 Geen afkortingen
+Summary:
+Zorg voor helder taalgebruik. Example: Niet "Uw afsprk is vrgnsd 15/7", wel "Uw afspraak is volgende week vrijdag 15 juli."

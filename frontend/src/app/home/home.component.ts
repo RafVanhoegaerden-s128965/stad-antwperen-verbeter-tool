@@ -31,6 +31,16 @@ export class HomeComponent {
   private originalResponseText: string = '';
   isLoading: boolean = false;
 
+  private _textInput: string = '';
+  get textInput(){
+    console.log("the value was accessed");
+    return this._textInput;
+  }
+  set textInput(text){
+    this._textInput = text;
+    localStorage.setItem('textInput', text);
+  }
+
   constructor(
     private formBuilder: FormBuilder,
     private apiService: ApiService,
@@ -42,6 +52,11 @@ export class HomeComponent {
       generatedText: [''],
       mediumType: [''],
     });
+    let text = localStorage.getItem('textInput');
+    if (text != null)
+    {
+      this.textInput = text;
+    }
   }
 
   async onGeneralize() {
