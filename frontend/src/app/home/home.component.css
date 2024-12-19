@@ -82,6 +82,12 @@
   box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
 }
 
+.output-text-view:empty::before {
+  content: attr(data-placeholder);
+  color: #9ca3af;
+  pointer-events: none;
+}
+
 /* Label Styling */
 .label {
   display: block;
@@ -118,46 +124,6 @@
   border-top-color: #3b82f6;
   border-radius: 50%;
   animation: spin 1s linear infinite;
-}
-
-/* Suggestions Box */
-.suggestions-box {
-  border: 1px solid #e5e7eb;
-  padding: 1rem;
-  margin-bottom: 1.5rem;
-  background-color: white;
-  display: none;
-}
-
-.suggestions-box.visible {
-  display: block;
-}
-
-.suggestions-container {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-.suggestion-item {
-  border: 1px solid #e5e7eb;
-  border-radius: 0.5rem;
-  padding: 1rem;
-  background-color: #f9fafb;
-}
-
-.suggestion-content {
-  margin-bottom: 0.5rem;
-}
-
-.original-text,
-.corrected-text {
-  margin-bottom: 0.5rem;
-}
-
-.explanation {
-  font-size: 0.875rem;
-  color: #6b7280;
 }
 
 /* Actions Section */
@@ -200,7 +166,7 @@
 }
 
 /* Button Styles */
-.generate-button, .finalise-button {
+.generate-button, .finalise-button, .accept-button, .deny-button {
   padding: 0.5rem 1rem;
   font-weight: 500;
   cursor: pointer;
@@ -230,6 +196,26 @@
   background-color: #2563eb;
 }
 
+.accept-button{
+  background-color: #ffffff;
+  border: solid 1px #006e33;
+  color: #006e33;
+}
+
+.accept-button:hover{
+  background-color: #dee4eb;
+}
+
+.deny-button{
+  background-color: #ffffff;
+  border: solid 1px #ef4444;
+  color: #ef4444;
+}
+
+.deny-button:hover{
+  background-color: #dee4eb;
+}
+
 /* Loading State */
 .loader-container {
   display: flex;
@@ -255,11 +241,15 @@
 
 /* Highlighting Styles */
 .highlight-suggestion {
-  background-color: #ffdead;
+  text-decoration: underline;
+  text-decoration-style: wavy;
+  text-decoration-color: #3b82f6;
   position: relative;
   cursor: pointer;
-  border-radius: 2px;
-  padding: 0 2px;
+}
+
+.changed-text {
+  background-color: #bce194;
 }
 
 .suggestion-tooltip {
@@ -281,14 +271,21 @@
   gap: 5px;
 }
 
-.tooltip-content > strong {
-  color: #000000;
+.tooltip-content > div > strong {
+  color: #161925;
 }
 
 .tooltip-actions {
   display: flex;
   gap: 10px;
-  margin-top: 5px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  align-self: center;
+}
+
+.divider{
+  margin-top: 20px;
+  width: 95%;
 }
 
 /* Responsive Adjustments */

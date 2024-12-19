@@ -30,11 +30,12 @@
         <div class="output-container">
           <label class="label">Verbeterde tekst</label>
           <div
+            #generatedTextDiv
             class="output-text-view"
             contenteditable="true"
             [class.loading]="isLoading"
+            [attr.data-placeholder]="'Hier verschijnt de verbeterde tekst...'"
             (input)="onGeneratedTextChange($event)"
-            #generatedTextDiv
           >
             <div *ngIf="isLoading" class="loader-container">
               <div class="loader"></div>
@@ -48,47 +49,6 @@
         </div>
       </div>
 
-      <!-- Suggestions area -->
-      <div class="suggestions-box" [class.visible]="suggestions.length > 0">
-        <label class="label">Suggesties</label>
-        <div class="suggestions-container">
-          <div
-            *ngFor="let suggestion of suggestions; let i = index"
-            class="suggestion-item"
-          >
-            <div class="suggestion-content">
-              <div class="original-text">
-                <strong>Originele tekst:</strong>
-                <p>{{ suggestion.incorrect_part }}</p>
-              </div>
-              <div class="corrected-text">
-                <strong>Suggestie:</strong>
-                <p>{{ suggestion.corrected_part }}</p>
-              </div>
-              <div class="explanation">
-                <small>{{ suggestion.explanation }}</small>
-              </div>
-            </div>
-            <div class="suggestion-actions">
-              <button
-                type="button"
-                class="button accept"
-                (click)="acceptSuggestionById(suggestion.id)"
-              >
-                Accepteren
-              </button>
-              <button
-                type="button"
-                class="button logout"
-                (click)="rejectSuggestionById(suggestion.id)"
-              >
-                Weigeren
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-
       <!-- Actions area -->
       <div class="controls">
         <div class="select-container">
@@ -96,29 +56,27 @@
           <select
             formControlName="mediumType"
             class="media-select"
-            
+            [class.error]="shouldShowError('mediumType')"
           >
-          <!-- [class.error]="shouldShowError('mediumType')" -->
             <option value="" disabled>Selecteer een medium</option>
             <option value="article">Artikel</option>
             <option value="socialmedia">Sociale media</option>
             <option value="tiktok">TikTok</option>
             <option value="sms">SMS</option>
           </select>
-          <!-- <span *ngIf="shouldShowError('mediumType')" class="error-message">
+          <span *ngIf="shouldShowError('mediumType')" class="error-message">
             Selecteer een medium type!
-          </span> -->
+          </span>
         </div>
         
         <div class="buttons">
           <button
-            type="button"
             class="generate-button"
             (click)="onGenerate()"
           >
             Genereer
           </button>
-          <button type="button" class="finalise-button" (click)="onSave()">
+          <button class="finalise-button" (click)="onSave()">
             Opslaan
           </button>
         </div>
@@ -140,22 +98,24 @@
     <div *ngFor="let suggestion of currentTooltipSuggestions">
       <strong>Originele tekst:</strong> {{ suggestion.incorrect_part }}<br />
       <strong>Suggestie:</strong> {{ suggestion.corrected_part }}<br />
-      <small>{{ suggestion.explanation }}</small>
+      <strong>Omschrijving:</strong> {{ suggestion.explanation }}
       <div class="tooltip-actions">
         <button
-          class="button accept"
+          type="button" 
+          class="accept-button"
           (click)="acceptSuggestionById(suggestion.id)"
         >
           Accepteren
         </button>
         <button
-          class="button logout"
+          class="deny-button"
           (click)="rejectSuggestionById(suggestion.id)"
         >
           Weigeren
         </button>
       </div>
       <hr
+        class="divider"
         *ngIf="
           suggestion !==
           currentTooltipSuggestions[currentTooltipSuggestions.length - 1]
