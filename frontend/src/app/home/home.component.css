@@ -11,14 +11,12 @@
   justify-content: space-between;
   align-items: center;
   padding: 1rem;
-  margin-bottom: 1.5rem;
 }
 
 .title {
   font-size: 2rem;
   font-weight: bold;
   color: #161925;
-  margin: 0;
   line-height: 1;
 }
 
@@ -29,6 +27,7 @@
 }
 
 .description .label {
+  width: 70%;
   font-size: 0.875rem;
   color: #6b7280;
   line-height: 1.5;
@@ -53,17 +52,29 @@
   min-width: 0;
 }
 
-.text-area {
+/* Unified text input styles */
+.input-text-view,
+.output-text-view {
   width: 100%;
   height: 300px;
   padding: 0.75rem;
   border: 1px solid #e5e7eb;
-  resize: vertical;
   font-family: inherit;
   margin-top: 0.5rem;
+  background: #ffffff;
+  font-size: 14px;
+  line-height: 1.5;
+  color: #000000;
+  white-space: pre-wrap;
+  overflow: auto;
 }
 
-.text-area:focus {
+.output-text-view {
+  margin-top: 1rem;
+}
+
+.input-text-view:focus,
+.output-text-view:focus {
   outline: none;
   border-color: #3b82f6;
   box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
@@ -160,6 +171,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  border-radius: 0.5rem;
 }
 
 .logout {
@@ -213,6 +225,44 @@
   }
 }
 
+/* Highlighting Styles */
+.highlight-suggestion {
+  background-color: #ffdead;
+  position: relative;
+  cursor: pointer;
+  border-radius: 2px;
+  padding: 0 2px;
+}
+
+.suggestion-tooltip {
+  position: absolute;
+  z-index: 1000;
+  background: #ffffff;
+  border: 1px solid #ccc;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+  border-radius: 4px;
+  padding: 10px;
+  max-width: 250px;
+  font-size: 14px;
+  font-family: inherit;
+}
+
+.tooltip-content {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.tooltip-content > strong {
+  color: #000000;
+}
+
+.tooltip-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 5px;
+}
+
 /* Responsive Adjustments */
 @media (max-width: 768px) {
   .text-fields {
@@ -231,57 +281,4 @@
   .buttons {
     width: 100%;
   }
-}
-
-/* Highlighting */
-.generated-text-view {
-  background: #ffffff;
-  border: 1px solid #ccc;
-  padding: 10px;
-  overflow: auto;
-  font-family: sans-serif;
-  font-size: 14px;
-  line-height: 1.5;
-  color: #000000;
-  white-space: pre-wrap;
-  min-height: 200px;
-  max-height: 300px;
-  resize: vertical;
-}
-
-.highlight-suggestion {
-  background-color: #FFDEAD;
-  position: relative;
-  cursor: pointer;
-  border-radius: 2px;
-  padding: 0 2px;
-}
-
-.suggestion-tooltip {
-  position: absolute;
-  z-index: 1000;
-  background: #ffffff;
-  border: 1px solid #ccc;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.3);
-  border-radius: 4px;
-  padding: 10px;
-  max-width: 250px;
-  font-size: 14px;
-  font-family: sans-serif;
-}
-
-.tooltip-content {
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-}
-
-.tooltip-content>strong {
-  color:#000000;
-}
-
-.tooltip-actions {
-  display: flex;
-  gap: 10px;
-  margin-top: 5px;
 }

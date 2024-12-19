@@ -26,30 +26,29 @@
           <textarea
             formControlName="inputText"
             placeholder="Voer hier je originele tekst in..."
-            class="text-area"
+            class="input-text-view"
           ></textarea>
         </div>
 
-        <!-- Generated text area (now a contenteditable div for highlighting) -->
-        <div class="field">
-          <label class="label">Gegenereerde tekst</label>
-          <div class="generated-text-container">
-            <div
-              class="generated-text-view"
-              contenteditable="true"
-              [class.loading]="isLoading"
-              (input)="onGeneratedTextChange($event)"
-              #generatedTextDiv
-            ></div>
-            <div *ngIf="isLoading" class="loader-container">
-              <div class="loader"></div>
-              <span>Bezig met genereren...</span>
-            </div>
+        <!-- Verbeterde text area (now a contenteditable div for highlighting) -->
+        <div class="output-container">
+          <label class="label">Verbeterde tekst</label>
+          <div
+            class="output-text-view"
+            contenteditable="true"
+            [class.loading]="isLoading"
+            (input)="onGeneratedTextChange($event)"
+            #generatedTextDiv
+          ></div>
+          <div *ngIf="isLoading" class="loader-container">
+            <div class="loader"></div>
+            <span>Bezig met genereren...</span>
           </div>
           <label class="label-helper">
-            Bent u niet tevreden met het resultaat? Pas eventueel aan en druk vervolgens op finaliseer!
+            Bent u niet tevreden met het resultaat? Pas eventueel aan en druk
+            vervolgens op finaliseer!
           </label>
-        </div>        
+        </div>
       </div>
 
       <!-- Suggestions area -->
@@ -96,7 +95,11 @@
       <div class="controls">
         <div class="select-container">
           <label class="label">Medium type</label>
-          <select formControlName="mediumType" class="select" id="mediumTypeSelect">
+          <select
+            formControlName="mediumType"
+            class="select"
+            id="mediumTypeSelect"
+          >
             <option value="" disabled style="color: #d0d0d0">
               Selecteer een medium
             </option>
@@ -125,23 +128,39 @@
 </div>
 
 <!-- Tooltip template -->
-<div class="suggestion-tooltip"
-     *ngIf="tooltipVisible"
-     [style.top.px]="tooltipY"
-     [style.left.px]="tooltipX"
-     (mouseenter)="onTooltipMouseEnter()"
-     (mouseleave)="onTooltipMouseLeave()">
+<div
+  class="suggestion-tooltip"
+  *ngIf="tooltipVisible"
+  [style.top.px]="tooltipY"
+  [style.left.px]="tooltipX"
+  (mouseenter)="onTooltipMouseEnter()"
+  (mouseleave)="onTooltipMouseLeave()"
+>
   <div class="tooltip-content">
     <div *ngFor="let suggestion of currentTooltipSuggestions">
-      <strong>Originele tekst:</strong> {{ suggestion.incorrect_part }}<br>
-      <strong>Suggestie:</strong> {{ suggestion.corrected_part }}<br>
+      <strong>Originele tekst:</strong> {{ suggestion.incorrect_part }}<br />
+      <strong>Suggestie:</strong> {{ suggestion.corrected_part }}<br />
       <small>{{ suggestion.explanation }}</small>
       <div class="tooltip-actions">
-        <button class="button accept" (click)="acceptSuggestionById(suggestion.id)">Accepteren</button>
-        <button class="button logout" (click)="rejectSuggestionById(suggestion.id)">Weigeren</button>
+        <button
+          class="button accept"
+          (click)="acceptSuggestionById(suggestion.id)"
+        >
+          Accepteren
+        </button>
+        <button
+          class="button logout"
+          (click)="rejectSuggestionById(suggestion.id)"
+        >
+          Weigeren
+        </button>
       </div>
-      <hr *ngIf="suggestion !== currentTooltipSuggestions[currentTooltipSuggestions.length - 1]">
+      <hr
+        *ngIf="
+          suggestion !==
+          currentTooltipSuggestions[currentTooltipSuggestions.length - 1]
+        "
+      />
     </div>
   </div>
 </div>
-
