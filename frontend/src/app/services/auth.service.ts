@@ -13,7 +13,7 @@ export class AuthService {
   async login(username: string, password: string): Promise<boolean> {
     try {
       //succes met dit in de env variablen te krijgen
-      const response = await fetch('https://kevinvanrooy.be/api/auth/token', {
+      const response = await fetch('https://antwerpen.localhost/api/auth/token', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
