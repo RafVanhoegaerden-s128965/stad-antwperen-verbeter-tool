@@ -15,8 +15,8 @@ if not SECRET_KEY:
         status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
         detail="JWT_SECRET_KEY not configured in environment variables"
     )
-ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 30
+ALGORITHM = os.getenv("ALGORITHM")
+ACCESS_TOKEN_EXPIRE_MINUTES = os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES")
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
     logger.info(f"Attempting to verify password")
@@ -47,7 +47,8 @@ def verify_token(token: str) -> dict:
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         return payload
-    except JWTError:
+    except JWTError as e:
+        print("Error decoding token:", str(e))
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Could not validate credentials",

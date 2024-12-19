@@ -60,7 +60,8 @@ services:
             - traefik.enable=true
             - traefik.http.routers.backend.rule=Host(`$HOSTNAME`) && PathPrefix(`/scraper`)
             - traefik.http.services.backend-service.loadbalancer.server.port=3000
-
+        networks:
+            - traefik
 volumes:
     es-data-prod:
 

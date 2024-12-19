@@ -145,7 +145,7 @@ def main():
         tiktok_profile = "https://www.tiktok.com/@stad_antwerpen"
         descriptions = scrape_tiktok_descriptions(tiktok_profile)
         if descriptions:
-            save_to_json(descriptions, "tiktok_descriptions.csv")
+            save_to_json(descriptions, "../data/tiktok_descriptions.csv")
         else:
             print("No descriptions found.")
 
