@@ -1,116 +1,126 @@
-<div class="container">
+<div class="page">
   <div class="header">
-    <h2 class="title">Slimme Schrijftool</h2>
-    <button class="button logout" (click)="onLogout()">Uitloggen</button>
+    <h2 class="title">Slimme Verbetertool</h2>
+    <div class="description">
+      <label class="label title">
+        Verbeter uw teksten volgens de huisstijlgids van verschillende media. 
+        Kies een medium (artikel, sociale media, TikTok of SMS) en voer uw tekst in. 
+        De tool analyseert uw tekst en biedt gerichte suggesties voor verbetering aan. 
+        Deze suggesties kunt u per stuk accepteren of weigeren, zodat u volledige controle houdt over de eindtekst. 
+        Wanneer u tevreden bent, slaat u eenvoudig uw definitieve versie op. 
+        Zo zorgt u voor consistente en professionele communicatie over al uw mediakanalen.
+      </label>
+    </div>
   </div>
-
-  <div class="scrollable-content">
+  
+  <div class="body">
     <form [formGroup]="textForm" class="form">
       <div class="text-fields">
         <!-- Original text area -->
-        <div class="field">
+        <div class="input-container">
           <label class="label">Originele tekst</label>
           <textarea
-            formControlName="originalText"
+            formControlName="inputText"
             placeholder="Voer hier je originele tekst in..."
-            class="text-area"
+            class="input-text-view"
           ></textarea>
         </div>
 
-        <!-- Generated text area -->
-        <div class="field">
-          <label class="label">Gegenereerde tekst</label>
-          <div class="generated-text-container">
-            <textarea
-              formControlName="generatedText"
-              placeholder="Hier verschijnt de gegenereerde tekst..."
-              class="text-area"
-              [class.loading]="isLoading"
-            ></textarea>
+        <!-- Verbeterde text area (now a contenteditable div for highlighting) -->
+        <div class="output-container">
+          <label class="label">Verbeterde tekst</label>
+          <div
+            #generatedTextDiv
+            class="output-text-view"
+            contenteditable="true"
+            [class.loading]="isLoading"
+            [attr.data-placeholder]="'Hier verschijnt de verbeterde tekst...'"
+            (input)="onGeneratedTextChange($event)"
+          >
             <div *ngIf="isLoading" class="loader-container">
               <div class="loader"></div>
               <span>Bezig met genereren...</span>
             </div>
           </div>
-          <label class="label-helper"
-            >Bent u niet tevreden met het resultaat? Pas eventueel aan en druk
-            vervolgens op finaliseer!</label
-          >
+          <label class="label-helper">
+            Bent u niet tevreden met het resultaat? Pas eventueel aan en druk
+            vervolgens op finaliseer!
+          </label>
         </div>
       </div>
 
-      <!-- Suggestions area -->
-      <div class="suggestions-area" [class.visible]="suggestions.length > 0">
-        <label class="label">Suggesties</label>
-        <div class="suggestions-container">
-          <div
-            *ngFor="let suggestion of suggestions; let i = index"
-            class="suggestion-item"
-          >
-            <div class="suggestion-content">
-              <div class="original-text">
-                <strong>Originele tekst:</strong>
-                <p>{{ suggestion.incorrect_part }}</p>
-              </div>
-              <div class="corrected-text">
-                <strong>Suggestie:</strong>
-                <p>{{ suggestion.corrected_part }}</p>
-              </div>
-              <div class="explanation">
-                <small>{{ suggestion.explanation }}</small>
-              </div>
-            </div>
-            <div class="suggestion-actions">
-              <button
-                type="button"
-                class="button accept"
-                (click)="acceptSuggestion(i)"
-              >
-                Accepteren
-              </button>
-              <button
-                type="button"
-                class="button logout"
-                (click)="rejectSuggestion(i)"
-              >
-                Weigeren
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-
+      <!-- Actions area -->
       <div class="controls">
         <div class="select-container">
           <label class="label">Medium type</label>
           <select
             formControlName="mediumType"
-            class="select"
-            id="mediumTypeSelect"
+            class="media-select"
+            [class.error]="shouldShowError('mediumType')"
           >
-            <option value="" disabled style="color: #d0d0d0">
-              Selecteer een medium
-            </option>
+            <option value="" disabled>Selecteer een medium</option>
             <option value="article">Artikel</option>
             <option value="socialmedia">Sociale media</option>
             <option value="tiktok">TikTok</option>
-            <option value="sms">sms</option>
+            <option value="sms">SMS</option>
           </select>
+          <span *ngIf="shouldShowError('mediumType')" class="error-message">
+            Selecteer een medium type!
+          </span>
         </div>
-
+        
         <div class="buttons">
           <button
-            type="button"
-            class="button generalize"
-            (click)="onGeneralize()"
+            class="generate-button"
+            (click)="onGenerate()"
           >
             Genereer
           </button>
-          <button type="button" class="button finalize" (click)="onFinalize()">
+          <button class="finalise-button" (click)="onSave()">
             Opslaan
           </button>
         </div>
       </div>
     </form>
+  </div>
+</div>
+
+<!-- Tooltip template -->
+<div
+  class="suggestion-tooltip"
+  *ngIf="tooltipVisible"
+  [style.top.px]="tooltipY"
+  [style.left.px]="tooltipX"
+  (mouseenter)="onTooltipMouseEnter()"
+  (mouseleave)="onTooltipMouseLeave()"
+>
+  <div class="tooltip-content">
+    <div *ngFor="let suggestion of currentTooltipSuggestions">
+      <strong>Originele tekst:</strong> {{ suggestion.incorrect_part }}<br />
+      <strong>Suggestie:</strong> {{ suggestion.corrected_part }}<br />
+      <strong>Omschrijving:</strong> {{ suggestion.explanation }}
+      <div class="tooltip-actions">
+        <button
+          type="button" 
+          class="accept-button"
+          (click)="acceptSuggestionById(suggestion.id)"
+        >
+          Accepteren
+        </button>
+        <button
+          class="deny-button"
+          (click)="rejectSuggestionById(suggestion.id)"
+        >
+          Weigeren
+        </button>
+      </div>
+      <hr
+        class="divider"
+        *ngIf="
+          suggestion !==
+          currentTooltipSuggestions[currentTooltipSuggestions.length - 1]
+        "
+      />
+    </div>
   </div>
 </div>

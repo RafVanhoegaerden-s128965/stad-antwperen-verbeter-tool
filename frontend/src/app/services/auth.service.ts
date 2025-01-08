@@ -4,15 +4,24 @@ import { BehaviorSubject } from 'rxjs';
 @Injectable({
   providedIn: 'root'
 })
+
 export class AuthService {
   private tokenKey = 'auth_token';
-  private isAuthenticatedSubject = new BehaviorSubject<boolean>(this.hasToken());
+  private _authState = new BehaviorSubject<boolean>(this.hasToken());
 
-  constructor() { }
+  constructor() {
+    // Initialize authentication state from localStorage
+    const token = this.getToken();
+    this._authState.next(!!token);
+  }
+
+  // Public getter for the auth state
+  get authState() {
+    return this._authState.asObservable();
+  }
 
   async login(username: string, password: string): Promise<boolean> {
     try {
-      //succes met dit in de env variablen te krijgen
       const response = await fetch('https://antwerpen.localhost/api/auth/token', {
         method: 'POST',
         headers: {
@@ -29,30 +38,29 @@ export class AuthService {
       }
 
       const data = await response.json();
-      console.log('Login response:', data);
       this.setToken(data.access_token);
-      this.isAuthenticatedSubject.next(true);
+      // Update auth state after successful login
+      this._authState.next(true);
       return true;
     } catch (error) {
       console.error('Login error:', error);
+      this._authState.next(false);
       return false;
     }
   }
 
   logout(): void {
     localStorage.removeItem(this.tokenKey);
-    this.isAuthenticatedSubject.next(false);
+    this._authState.next(false);
   }
 
   getToken(): string | null {
-    const token = localStorage.getItem(this.tokenKey);
-    console.log('Current token:', token);
-    return token;
+    return localStorage.getItem(this.tokenKey);
   }
 
   private setToken(token: string): void {
-    console.log('Setting token:', token);
     localStorage.setItem(this.tokenKey, token);
+    this._authState.next(true);
   }
 
   private hasToken(): boolean {
@@ -60,6 +68,6 @@ export class AuthService {
   }
 
   isAuthenticated(): boolean {
-    return this.isAuthenticatedSubject.value;
+    return this._authState.value;
   }
 }

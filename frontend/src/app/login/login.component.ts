@@ -12,7 +12,7 @@ import { CommonModule } from '@angular/common';
     <div class="login-page">
       <div class="login-container">
         <div class="login-header">
-          <h1>Slimme Schrijftool</h1>
+          <h1>Slimme Verbetertool</h1>
           <p>Log in om door te gaan</p>
         </div>
         
@@ -187,15 +187,19 @@ export class LoginComponent {
         );
 
         if (success) {
+          console.log('Login successful, navigating to home');
+          // Give the auth state a moment to update before navigation
+          await new Promise(resolve => setTimeout(resolve, 100));
           this.router.navigate(['/home']);
         } else {
           this.error = 'Ongeldige inloggegevens';
         }
       } catch (error) {
+        console.error('Login error:', error);
         this.error = 'Inloggen mislukt. Probeer het opnieuw.';
       } finally {
         this.isLoading = false;
       }
     }
   }
-} 
+}
