@@ -39,7 +39,7 @@ class CohereLLM:
                     "content": [
                         {
                             "type": "text",
-                            "text": "Huisstijlgids:\n```"
+                            "text": initial_prompt + "\nHuisstijlgids:\n```"
                                 + Path(rules_path, "huisstijlgids 1-4.txt").read_text(encoding="utf-8")
                                 + "\n\n"
                                 + Path(rules_path, "web.txt").read_text(encoding="utf-8")
@@ -54,7 +54,7 @@ class CohereLLM:
                     "content": [
                         {
                             "type": "text",
-                            "text": "Huisstijlgids:\n```"
+                            "text": initial_prompt + "\nHuisstijlgids:\n```"
                                 + Path(rules_path, "huisstijlgids 1-4.txt").read_text(encoding="utf-8")
                                 + "\n\n"
                                 + Path(rules_path, "pers.txt").read_text(encoding="utf-8")
@@ -69,7 +69,7 @@ class CohereLLM:
                     "content": [
                         {
                             "type": "text",
-                            "text": "Huisstijlgids:\n```"
+                            "text": initial_prompt + "\nHuisstijlgids:\n```"
                                 + Path(rules_path, "huisstijlgids 1-4.txt").read_text(encoding="utf-8")
                                 + "\n\n"
                                 + Path(rules_path, "socialemedia.txt").read_text(encoding="utf-8")
@@ -84,7 +84,7 @@ class CohereLLM:
                     "content": [
                         {
                             "type": "text",
-                            "text": "Huisstijlgids:\n```"
+                            "text": initial_prompt + "\nHuisstijlgids:\n```"
                                 + Path(rules_path, "huisstijlgids 1-4.txt").read_text(encoding="utf-8")
                                 + "\n\n"
                                 + Path(rules_path, "socialemedia.txt").read_text(encoding="utf-8")
@@ -99,7 +99,7 @@ class CohereLLM:
                     "content": [
                         {
                             "type": "text",
-                            "text": "Huisstijlgids:\n```"
+                            "text": initial_prompt + "\nHuisstijlgids:\n```"
                                 + Path(rules_path, "huisstijlgids 1-4.txt").read_text(encoding="utf-8")
                                 + "\n\n"
                                 + Path(rules_path, "sms.txt").read_text(encoding="utf-8")
@@ -174,7 +174,7 @@ class CohereLLM:
         messages.append({"role": "user", "content": f"```{text}```"})
 
         print("Calling API")
-        response = self.client.chat(model="command-r-plus-08-2024",
+        response = self.client.chat(model="command-r7b-12-2024",
                         messages=messages,
                         temperature=temperature,
                         frequency_penalty=frequency_penalty,
@@ -234,7 +234,7 @@ if __name__ == '__main__':
     client = CohereLLM()
 
     input = Path(f'api/data/input/{number}.txt').read_text(encoding='utf-8')
-    output = get_suggestions(input, TextType.article)
+    output = client.get_suggestions(input, TextType.article)
     output = output.removesuffix("```").removeprefix("```")
 
     json_object = json.loads(output)
