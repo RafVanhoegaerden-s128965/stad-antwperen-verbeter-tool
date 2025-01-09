@@ -22,7 +22,7 @@ export class AuthService {
 
   async login(username: string, password: string): Promise<boolean> {
     try {
-      const response = await fetch('https://antwerpen.localhost/api/auth/token', {
+      const response = await fetch('api/auth/token', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',

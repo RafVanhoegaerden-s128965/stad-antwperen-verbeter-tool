@@ -14,7 +14,7 @@ interface RawTextResponse {
 })
 export class ApiService {
   //succes met dit in de env variablen te krijgen
-  private baseUrl = 'https://antwerpen.localhost/api';
+  private baseUrl = 'api';
 
   constructor(
     private http: HttpClient,
