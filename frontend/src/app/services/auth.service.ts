@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
+import { jwtDecode } from 'jwt-decode';
 
 @Injectable({
   providedIn: 'root'
@@ -12,7 +13,7 @@ export class AuthService {
   constructor() {
     // Initialize authentication state from localStorage
     const token = this.getToken();
-    this._authState.next(!!token);
+    this._authState.next(!!token && !this.isTokenExpired(token));
   }
 
   // Public getter for the auth state
@@ -69,5 +70,17 @@ export class AuthService {
 
   isAuthenticated(): boolean {
     return this._authState.value;
+  }
+
+  isTokenExpired(token: string): boolean {
+    try {
+      const decoded: any = jwtDecode(token);
+      if (!decoded.exp) return true;
+
+      const expirationDate = new Date(decoded.exp * 1000);
+      return expirationDate < new Date();
+    } catch (error) {
+      return true;
+    }
   }
 }

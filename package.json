@@ -6,6 +6,7 @@
     "@types/wrap-ansi": "^8.1.0"
   },
   "dependencies": {
-    "bulma": "^1.0.2"
+    "bulma": "^1.0.2",
+    "jwt-decode": "^4.0.0"
   }
 }
